@@ -1,0 +1,84 @@
+.services-section {
+  padding: 50px 20px;
+}
+
+.services-section h2 {
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.services-section h2 span {
+  color: var(--primary-color);
+}
+
+.services-section p {
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto 40px;
+  font-size: 1.1em;
+  color: #666;
+  text-align: center;
+}
+
+.services-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.service-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  transition: 0.3s ease-in-out;
+}
+
+.service-card.featured-service {
+  background: var(--primary-color);
+  color: #fff;
+}
+.service-card.featured-service .service-description {
+  color: var(--second-text-color) !important;
+}
+.service-card.featured-service a {
+  color: #fff;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+}
+
+.service-card .service-icon {
+  font-size: 2em;
+  color: var(--primary-color);
+  display: block;
+  margin-bottom: 15px;
+}
+
+.service-card h3 {
+  font-size: 1.2em;
+  color: #eb2323;
+  margin-bottom: 10px;
+}
+
+.service-card p {
+  color: #666;
+  margin-bottom: 15px;
+  font-size: 1em;
+}
+
+.service-card a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.service-card a:hover {
+  text-decoration: underline;
+}

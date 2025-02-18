@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+:root {
+    --primary-color: #1f2937;
+    --secondary-color: #eb2323;
+    --text-color: #333;
+    --second-text-color: #bbb;
+    --overlay-color: rgba(0, 0, 0, 0.566);
+  }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
