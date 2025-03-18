@@ -1,0 +1,244 @@
+1. جدول المستخدمين (Users)
+
+user_id: رقم تعريف المستخدم (مفتاح أساسي).
+full_name: اسم المستخدم.
+email: البريد الإلكتروني.
+phone: رقم الهاتف.
+password: ,
+role : 
+stutus: 
+license_number: رقم الرخصة.
+
+CREATE TABLE "User" (
+    user_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(50),
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'driver', 'admin')),
+    status VARCHAR(50) DEFAULT NULL CHECK (status IN ('pending', 'approved', 'rejected')),
+
+    -- شرط: status يجب أن يكون NOT NULL إذا كان role = 'driver'
+    CONSTRAINT check_driver_status CHECK (
+        (role = 'driver' AND status IS NOT NULL) OR
+        (role <> 'driver' AND status IS NULL)
+    ),
+
+    license_number VARCHAR(50) UNIQUE,
+    
+    -- شرط: يجب أن يكون للسائق رخصة قيادة
+    CONSTRAINT check_driver_license CHECK (
+        (role = 'driver' AND license_number IS NOT NULL) OR
+        (role <> 'driver')
+    ),
+
+    bus_id INTEGER REFERENCES "Buses"(bus_id) ON DELETE SET NULL,
+    isDeleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+
+#######################################
+
+2. جدول الحجوزات (Bookings)
+
+booking_id: رقم تعريف الحجز (مفتاح أساسي).
+user_id: معرف المستخدم (مفتاح خارجي يرتبط بجدول Users).
+bus_id: معرف الحافلة (مفتاح خارجي يرتبط بجدول Buses).
+seat_number: رقم المقعد المحجوز.
+departure_location: نقطة الانطلاق.
+arrival_location: نقطة الوصول.
+departure_time: موعد بدء الرحلة.
+تُستخدم هذه الجدول لتخزين تفاصيل الحجز لكل مستخدم، مما يسمح بربط المستخدمين بالرحلات المحددة.
+
+CREATE TABLE Bookings (
+    booking_id SERIAL PRIMARY KEY, -- رقم تعريف الحجز (مفتاح أساسي)
+    user_id INT NOT NULL, -- معرف المستخدم (يجب أن يكون موجودًا)
+    bus_id INT NOT NULL, -- معرف الحافلة (يجب أن يكون موجودًا)
+    seat_number INT NOT NULL, -- رقم المقعد المحجوز
+    departure_location VARCHAR(255) NOT NULL, -- نقطة الانطلاق
+    arrival_location VARCHAR(255) NOT NULL, -- نقطة الوصول
+    departure_time TIMESTAMP NOT NULL, -- موعد بدء الرحلة
+    
+    -- ربط user_id بجدول Users
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+
+    -- ربط bus_id بجدول Buses
+    CONSTRAINT fk_bus FOREIGN KEY (bus_id) REFERENCES Buses(bus_id) ON DELETE CASCADE
+);
+
+#######################################
+
+3. جدول الحافلات (Buses)
+
+bus_id: رقم تعريف الحافلة (مفتاح أساسي).
+bus_number: رقم الحافلة.
+driver_id: معرف السائق (مفتاح خارجي يشير إلى BusDrivers).
+route_id: معرف المسار (مفتاح خارجي يشير إلى Routes).
+gps_device: بيانات أو معرف جهاز تتبع الـ GPS.
+العلاقة بين الحافلات والسائقين تكون واحد إلى واحد، وبين الحافلات والمسارات أيضاً واحد إلى واحد.
+
+CREATE TABLE Buses (
+    bus_id SERIAL PRIMARY KEY,
+    bus_number VARCHAR(50) NOT NULL UNIQUE,
+    driver_id INT UNIQUE, -- إزالة UNIQUE إذا كنت تريد السماح لسائق بقيادة أكثر من حافلة
+    route_id INT NOT NULL,
+    gps_device VARCHAR(255),
+    FOREIGN KEY (driver_id) REFERENCES Users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (route_id) REFERENCES Routes(route_id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE Buses
+ADD COLUMN company_id INT REFERENCES Companies(company_id) ON DELETE SET NULL,
+ADD COLUMN seat_capacity INT NOT NULL DEFAULT 50;
+#######################################
+
+
+4. جدول المسارات (Routes)
+
+route_id: رقم تعريف المسار (مفتاح أساسي).
+route_name: اسم المسار.
+start_point: نقطة البداية.
+end_point: نقطة النهاية.
+
+
+CREATE TABLE Routes (
+    route_id SERIAL PRIMARY KEY,
+    route_name VARCHAR(255) NOT NULL UNIQUE,
+    start_point VARCHAR(255) NOT NULL,
+    end_point VARCHAR(255) NOT NULL
+);
+
+
+يمكن إضافة عمود يشير للمنطقة لتصنيف كل مسار حسب المنطقة:
+ALTER TABLE Routes
+ADD COLUMN region_id INT REFERENCES Regions(region_id) ON DELETE SET NULL;
+#######################################
+
+5. جدول المحطات (Stops)
+
+stop_id: رقم تعريف المحطة (مفتاح أساسي).
+route_id: معرف المسار (مفتاح خارجي يشير إلى Routes).
+stop_name: اسم المحطة.
+latitude و longitude: إحداثيات المحطة.
+تُستخدم هذه الجدول لتحديد المحطات التي يمر بها كل مسار، بحيث تكون العلاقة بين المسارات والمحطات واحد إلى متعدد.
+
+CREATE TABLE Stops (
+    stop_id SERIAL PRIMARY KEY, -- رقم تعريف المحطة (مفتاح أساسي)
+    route_id INT NOT NULL, -- معرف المسار (يجب أن يكون موجودًا)
+    stop_name VARCHAR(255) NOT NULL, -- اسم المحطة
+    latitude DECIMAL(9,6) NOT NULL, -- إحداثيات خط العرض
+    longitude DECIMAL(9,6) NOT NULL, -- إحداثيات خط الطول
+
+    -- ربط route_id بجدول Routes
+    CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES Routes(route_id) ON DELETE CASCADE
+);
+
+
+#######################################
+
+6. جدول تتبع GPS (GPS_Tracking)
+
+tracking_id: رقم تعريف التسجيل (مفتاح أساسي).
+bus_id: معرف الحافلة (مفتاح خارجي يشير إلى Buses).
+timestamp: وقت تسجيل الموقع.
+latitude و longitude: إحداثيات الحافلة في ذلك الوقت.
+يساعد هذا الجدول في تتبع موقع الحافلات بشكل دوري لتحديث موقعها الحقيقي.
+
+CREATE TABLE GPS_Tracking (
+    tracking_id SERIAL PRIMARY KEY, -- رقم تعريف التسجيل (مفتاح أساسي)
+    bus_id INT NOT NULL, -- معرف الحافلة (مفتاح خارجي يشير إلى Buses)
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- وقت تسجيل الموقع (مع قيمة افتراضية)
+    latitude DECIMAL(9,6) NOT NULL, -- إحداثيات خط العرض
+    longitude DECIMAL(9,6) NOT NULL, -- إحداثيات خط الطول
+    speed DECIMAL(5,2), -- سرعة الحافلة (اختياري)
+    direction VARCHAR(50), -- اتجاه الحافلة (اختياري: شمال، جنوب، شرق، غرب)
+    altitude DECIMAL(6,2), -- الارتفاع عن سطح البحر (اختياري)
+    
+    -- ربط bus_id بجدول Buses
+    CONSTRAINT fk_bus_tracking FOREIGN KEY (bus_id) REFERENCES Buses(bus_id) ON DELETE CASCADE
+);
+
+#######################################
+
+7. جدول الإشعارات (Notifications)
+
+notification_id: رقم تعريف الإشعار (مفتاح أساسي).
+user_id: معرف المستخدم (مفتاح خارجي يشير إلى Users).
+bus_id: معرف الحافلة (مفتاح خارجي يشير إلى Buses).
+message: نص الإشعار (مثل "الحافلة قريبة من موقعك").
+timestamp: وقت إرسال الإشعار.
+هذا الجدول يُستخدم لإرسال إشعارات للمستخدمين بناءً على موقع الحافلة والرحلات المحجوزة.
+
+CREATE TABLE Notifications (
+    notification_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    bus_id INT NOT NULL,
+    message TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_bus FOREIGN KEY (bus_id) REFERENCES Buses(bus_id) ON DELETE CASCADE
+);
+
+
+8. إضافة جدول للشركة (Companies)
+حتى لو صار عندك شركة واحدة دلوقتي، نجهز الجدول لدعم المستقبل. ممكن الجدول يحتوي على:
+
+company_id: رقم تعريف الشركة (مفتاح أساسي).
+company_name: اسم الشركة.
+bus_count: عدد الباصات الثابتة التابعة للشركة.
+sql
+نسخ
+CREATE TABLE Companies (
+    company_id SERIAL PRIMARY KEY,
+    company_name VARCHAR(255) NOT NULL,
+    bus_count INT NOT NULL  -- عدد الباصات التابعة للشركة
+);
+11. إضافة جدول للمناطق (Regions)
+إذا كنت عايز ترتب المواعيد حسب المناطق، فممكن ننشئ جدول للمناطق:
+
+region_id: رقم تعريف المنطقة (مفتاح أساسي).
+region_name: اسم المنطقة.
+bus_count: عدد الباصات الثابتة الخاصة بكل منطقة.
+sql
+نسخ
+CREATE TABLE Regions (
+    region_id SERIAL PRIMARY KEY,
+    region_name VARCHAR(255) NOT NULL,
+    bus_count INT NOT NULL  -- عدد الباصات في المنطقة
+);
+
+12. إنشاء جدول للمواعيد الثابتة (Fixed_Schedules)
+بما إنك عايز مواعيد ثابتة لكل خط (مثلاً صباحي ومسائي) ومقسمة حسب أيام الأسبوع، فممكن جدول المواعيد يكون بالشكل التالي:
+
+schedule_id: رقم تعريف الميعاد (مفتاح أساسي).
+route_id: رقم تعريف المسار (مفتاح خارجي من جدول Routes).
+service_period: فترة الخدمة (مثلاً 'morning' للمساءي أو 'evening' للصباحية؛ ممكن تغير المسميات حسب متطلباتك).
+day_of_week: يوم الأسبوع (يمكن تحديد مجموعة أيام ثابتة).
+departure_time: وقت بدء الرحلة.
+CREATE TABLE Fixed_Schedules (
+    schedule_id SERIAL PRIMARY KEY,
+    route_id INT NOT NULL REFERENCES Routes(route_id) ON DELETE CASCADE,
+    service_period VARCHAR(50) NOT NULL CHECK (service_period IN ('morning', 'evening')),
+    day_of_week VARCHAR(50) NOT NULL CHECK (
+        day_of_week IN ('الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت')
+    ),
+    departure_time TIME NOT NULL
+);
+#######################################
+
+العلاقات الرئيسية:
+Users ↔ Bookings: علاقة واحد إلى متعدد (مستخدم واحد يمكنه أن يقوم بعدة حجوزات).
+Bookings ↔ Buses: كل حجز يرتبط بحافلة محددة.
+Buses ↔ BusDrivers: علاقة واحد إلى واحد (كل حافلة مرتبطة بسائق واحد).
+Buses ↔ Routes: علاقة واحد إلى واحد (كل حافلة تسلك مساراً محدداً).
+Routes ↔ Stops: علاقة واحد إلى متعدد (كل مسار يحتوي على عدة محطات).
+Buses ↔ GPS_Tracking: علاقة واحد إلى متعدد (تسجيلات تتبع متعددة لكل حافلة).
+Users, Buses ↔ Notifications: علاقة لتسجيل إشعارات كل مستخدم عن الحافلة المرتبطة.
+هذا التصميم يوفر نظاماً متكاملاً يمكنه إدارة بيانات المستخدمين، الحجوزات، وتتبع الحافلات من خلال GPS مع إشعارات فورية عند اقتراب الحافلة، مما يلبي احتياجات التطبيق بشكل منظم ومرن.
+
+
+
+
+
+
