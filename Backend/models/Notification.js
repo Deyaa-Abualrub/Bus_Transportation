@@ -38,7 +38,7 @@ const Notification = sequelize.define(
     },
   },
   {
-    tableName: "Notifications",
+    tableName: "notifications",
     timestamps: false, // تجنب إضافة createdAt و updatedAt تلقائيًا
   }
 );

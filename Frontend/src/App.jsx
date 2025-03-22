@@ -5,6 +5,7 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
+import SearchBus from "./Pages/SearchBus";
 
 function App() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function App() {
         <Route path="/signin" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/searchbus" element={<SearchBus />} />
       </Routes>
       {!hideNavAndFooter && <Footer />}
     </>

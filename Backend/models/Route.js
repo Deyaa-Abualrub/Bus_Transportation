@@ -24,7 +24,7 @@ const Route = sequelize.define(
     },
   },
   {
-    tableName: "Routes",
+    tableName: "routes",
     timestamps: false,
   }
 );

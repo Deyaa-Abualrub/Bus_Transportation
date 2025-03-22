@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database"); // Adjust the path as needed
-const User = require("./User"); // Adjust the path as needed
-const Route = require("./Route"); // Adjust the path as needed
+const sequelize = require("../config/database");
+const User = require("./User");
+const Route = require("./Route");
 
 const Bus = sequelize.define(
   "Buses",
@@ -15,6 +15,11 @@ const Bus = sequelize.define(
       type: DataTypes.STRING(50),
       allowNull: false,
       unique: true,
+    },
+    seat_number: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 50,
     },
     driver_id: {
       type: DataTypes.INTEGER,
@@ -34,15 +39,56 @@ const Bus = sequelize.define(
       },
       onDelete: "CASCADE",
     },
+    bus_route: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    launch_date: {
+      type: DataTypes.DATE, // Stores both date and time
+      allowNull: true,
+    },
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
     gps_device: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      validate: {
+        isIn: [[1, 2, 3]],
+      },
+    },
+    status_change_time: {
+      type: DataTypes.DATE, // To store the time when the status change happens
+      allowNull: true,
+    },
+    bus_image: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      defaultValue:
+        "https://themeenergy.com/themes/html/transfers/images/uploads/bus.jpg", // Default image URL
+    },
   },
   {
-    tableName: "Buses",
+    tableName: "buses",
     timestamps: false,
   }
 );
+
+// Hook to update status_change_time when status changes from 2 to 3 or 2 to 1
+Bus.beforeUpdate((bus, options) => {
+  if (
+    bus._changed.status &&
+    (bus.status === 1 || bus.status === 3) &&
+    bus._previousDataValues.status === 2
+  ) {
+    bus.status_change_time = new Date(new Date().getTime() + 30 * 60000); // Adding 30 minutes
+  }
+});
 
 module.exports = Bus;

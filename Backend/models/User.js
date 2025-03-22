@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Bus = require("./Buses");
 
-const User = sequelize.define(  
+const User = sequelize.define(
   "User",
   {
     user_id: {
@@ -19,10 +19,6 @@ const User = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    phone: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -37,10 +33,10 @@ const User = sequelize.define(
     },
     status: {
       type: DataTypes.STRING(50),
-      allowNull: true, // ✅ السماح بأن يكون NULL
-      defaultValue: null, // ✅ التأكد من أن القيمة الافتراضية NULL
+      allowNull: true, 
+      defaultValue: null, 
       validate: {
-        isIn: [["pending", "approved", "rejected", null]],
+        isIn: [["pending", "approved", "rejected"]],
         checkStatus(value) {
           if (this.role === "driver" && !value) {
             throw new Error(
@@ -49,18 +45,6 @@ const User = sequelize.define(
           }
           if (this.role !== "driver" && value !== null) {
             throw new Error("Only drivers can have a status.");
-          }
-        },
-      },
-    },
-    license_number: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      unique: true,
-      validate: {
-        checkDriverLicense(value) {
-          if (this.role === "driver" && !value) {
-            throw new Error("Drivers must have a license number.");
           }
         },
       },

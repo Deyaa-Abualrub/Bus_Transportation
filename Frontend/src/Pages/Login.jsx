@@ -4,6 +4,7 @@ import { User, Mail, Lock } from "react-feather";
 import lr_video from "../assets/lr-video.mp4";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const App = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -18,42 +19,64 @@ const App = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      const newFormData = { ...prev, [name]: value };
+      // console.log(newFormData);
+      return newFormData;
+    });
   };
-
-  // const handleGoogleSignIn = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await axios.get("http://localhost:4000/auth/google", {
-  //       withCredentials: true,
-  //     });
-  //     window.location.href = response.data.redirectUrl; // كفاية هذا فقط
-  //   } catch (error) {
-  //     alert("Google Sign-in failed");
-  //     console.error(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log("Sending data to backend:", formData); // Log data being sent
+
     setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:4000/auth/signup",
-        formData,
-        { withCredentials: true }
-      );
-      alert(res.data.message);
+      await axios.post("http://localhost:4000/auth/signup", formData, {
+        withCredentials: true,
+      });
+      console.log(formData);
       setLoading(false);
-      navigate("/");
+      Swal.fire({
+        title: "Welcome to the app!",
+        text: "Registration successful.",
+        icon: "success",
+        confirmButtonColor: "#1f2937",
+      });
+
+      Swal.fire({
+        title: "Are you a user or a driver?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "User",
+        cancelButtonText: "Driver",
+        confirmButtonColor: "#1f2937",
+        cancelButtonColor: "#eb2323",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "You are selected as a user!",
+            icon: "success",
+            confirmButtonColor: "#1f2937",
+          });
+          navigate("/"); // Redirect to home page if "User" is selected
+        } else if (result.isDismissed) {
+          Swal.fire({
+            title: "You are selected as a driver!",
+            icon: "success",
+            confirmButtonColor: "#1f2937",
+          });
+        }
+      });
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed");
       setLoading(false);
+      console.error("Error during registration:", error); // Log error for debugging
+      Swal.fire({
+        title: "Error occurred",
+        text: error.response?.data?.message || "Registration failed",
+        icon: "error",
+        confirmButtonColor: "#eb2323",
+      });
     }
   };
 
@@ -69,11 +92,39 @@ const App = () => {
         },
         { withCredentials: true }
       );
-      alert(res.data.message);
       setLoading(false);
+      Swal.fire({
+        title: "Welcome back!",
+        text: res.data.message,
+        icon: "success",
+        confirmButtonColor: "#1f2937",
+      });
       navigate("/");
     } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
+      setLoading(false);
+      Swal.fire({
+        title: "Error occurred",
+        text: error.response?.data?.message || "Login failed",
+        icon: "error",
+        confirmButtonColor: "#eb2323",
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:4000/auth/google", {
+        withCredentials: true,
+      });
+      window.location.href = response.data.redirectUrl; // Redirect user to Google
+    } catch (error) {
+      Swal.fire({
+        title: "Google sign-in failed",
+        text: "There was an error during Google sign-in.",
+        icon: "error",
+        confirmButtonColor: "#eb2323",
+      });
       setLoading(false);
     }
   };
@@ -114,13 +165,13 @@ const App = () => {
               <p className="text-gray-600">
                 {isRegister
                   ? "Fill in your details to get started"
-                  : "Enter your credentials to continue"}
+                  : "Enter your details to continue"}
               </p>
             </div>
 
             {/* Google Sign In Button */}
             <button
-              // onClick={handleGoogleSignIn}
+              onClick={handleGoogleSignIn}
               className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300"
             >
               <img
@@ -131,22 +182,11 @@ const App = () => {
               {loading ? "Loading..." : "Continue with Google"}
             </button>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
+            {/* Form Fields */}
             <form
               onSubmit={isRegister ? handleRegister : handleLogin}
               className="space-y-6"
             >
-              {/* Form Fields */}
               <div className="space-y-4">
                 {isRegister && (
                   <>
@@ -163,7 +203,7 @@ const App = () => {
                           name="full_name"
                           type="text"
                           required
-                          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#D7D3BF] focus:border-transparent transition-all duration-300"
+                          className="w-full text-gray-900 text-custom-gray pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#D7D3BF] focus:border-transparent transition-all duration-300 "
                           placeholder="Enter your full name"
                           value={formData.full_name}
                           onChange={handleChange}
@@ -175,7 +215,7 @@ const App = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
+                    Email Address
                   </label>
                   <div className="relative">
                     <Mail
@@ -186,7 +226,7 @@ const App = () => {
                       name="email"
                       type="email"
                       required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#D7D3BF] focus:border-transparent transition-all duration-300"
+                      className="w-full  text-gray-900 text-custom-gray pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#D7D3BF] focus:border-transparent transition-all duration-300"
                       placeholder="your@email.com"
                       value={formData.email}
                       onChange={handleChange}
@@ -207,7 +247,7 @@ const App = () => {
                       name="password"
                       type="password"
                       required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#D7D3BF] focus:border-transparent transition-all duration-300"
+                      className="w-full text-gray-900 pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#D7D3BF] focus:border-transparent transition-all duration-300"
                       placeholder="Enter your password"
                       value={formData.password}
                       onChange={handleChange}

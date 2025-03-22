@@ -33,27 +33,36 @@ const signinSchema = Joi.object({
 
 const signup = async (req, res) => {
   try {
-    // ✅ التحقق من البيانات قبل تنفيذ أي عملية
+    console.log("Request Body:", req.body); // Log incoming data
+
+    // التحقق من البيانات عبر Joi
     const { error } = signupSchema.validate(req.body);
     if (error) {
+      console.log("Validation Error:", error.details[0].message); // Log validation errors
       return res.status(400).json({ message: error.details[0].message });
     }
 
     const { full_name, email, password } = req.body;
 
+    // تحقق إذا كان البريد الإلكتروني مسجلاً مسبقاً
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
+      console.log("Email already exists");
       return res.status(400).json({ message: "Email is already registered" });
     }
 
+    // تشفير كلمة المرور
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Hashed Password:", hashedPassword); // Log hashed password
 
+    // إنشاء مستخدم جديد في قاعدة البيانات
     const newUser = await User.create({
       full_name,
       email,
       password: hashedPassword,
     });
 
+    // إنشاء JWT
     const token = jwt.sign(
       { userId: newUser.id, email: newUser.email },
       JWT_SECRET,
@@ -76,6 +85,7 @@ const signup = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Signup Error:", error); // Log any errors
     return res
       .status(500)
       .json({ message: "Signup failed", error: error.message });
@@ -84,7 +94,6 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   try {
-    // ✅ التحقق من البيانات باستخدام Joi
     const { error } = signinSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
@@ -132,7 +141,6 @@ const logoutUser = (req, res) => {
 //   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 // };
 
-
 // const googleSigninCallback = (req, res, next) => {
 //   passport.authenticate("google", { session: false }, (err, user) => {
 //     if (err || !user) {
@@ -152,7 +160,6 @@ const logoutUser = (req, res) => {
 //     return res.redirect(`http://localhost:5173?token=${token}`);
 //   })(req, res, next);
 // };
-
 
 module.exports = {
   signup,

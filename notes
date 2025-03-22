@@ -3,17 +3,16 @@
 user_id: رقم تعريف المستخدم (مفتاح أساسي).
 full_name: اسم المستخدم.
 email: البريد الإلكتروني.
-phone: رقم الهاتف.
 password: ,
-role : 
+role: 
 stutus: 
-license_number: رقم الرخصة.
+isdeleted: , 
+bus_id : هاي عشان اذا كان سائق اربطه بال table name buses
 
 CREATE TABLE "User" (
     user_id SERIAL PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    phone VARCHAR(50),
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'driver', 'admin')),
     status VARCHAR(50) DEFAULT NULL CHECK (status IN ('pending', 'approved', 'rejected')),
@@ -22,14 +21,6 @@ CREATE TABLE "User" (
     CONSTRAINT check_driver_status CHECK (
         (role = 'driver' AND status IS NOT NULL) OR
         (role <> 'driver' AND status IS NULL)
-    ),
-
-    license_number VARCHAR(50) UNIQUE,
-    
-    -- شرط: يجب أن يكون للسائق رخصة قيادة
-    CONSTRAINT check_driver_license CHECK (
-        (role = 'driver' AND license_number IS NOT NULL) OR
-        (role <> 'driver')
     ),
 
     bus_id INTEGER REFERENCES "Buses"(bus_id) ON DELETE SET NULL,
@@ -45,9 +36,9 @@ booking_id: رقم تعريف الحجز (مفتاح أساسي).
 user_id: معرف المستخدم (مفتاح خارجي يرتبط بجدول Users).
 bus_id: معرف الحافلة (مفتاح خارجي يرتبط بجدول Buses).
 seat_number: رقم المقعد المحجوز.
-departure_location: نقطة الانطلاق.
-arrival_location: نقطة الوصول.
-departure_time: موعد بدء الرحلة.
+; departure_location: نقطة الانطلاق.
+; arrival_location: نقطة الوصول.
+; departure_time: موعد بدء الرحلة.
 تُستخدم هذه الجدول لتخزين تفاصيل الحجز لكل مستخدم، مما يسمح بربط المستخدمين بالرحلات المحددة.
 
 CREATE TABLE Bookings (
@@ -55,9 +46,9 @@ CREATE TABLE Bookings (
     user_id INT NOT NULL, -- معرف المستخدم (يجب أن يكون موجودًا)
     bus_id INT NOT NULL, -- معرف الحافلة (يجب أن يكون موجودًا)
     seat_number INT NOT NULL, -- رقم المقعد المحجوز
-    departure_location VARCHAR(255) NOT NULL, -- نقطة الانطلاق
-    arrival_location VARCHAR(255) NOT NULL, -- نقطة الوصول
-    departure_time TIMESTAMP NOT NULL, -- موعد بدء الرحلة
+    ; departure_location VARCHAR(255) NOT NULL, -- نقطة الانطلاق
+    ; arrival_location VARCHAR(255) NOT NULL, -- نقطة الوصول
+    ; departure_time TIMESTAMP NOT NULL, -- موعد بدء الرحلة
     
     -- ربط user_id بجدول Users
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
@@ -80,17 +71,60 @@ gps_device: بيانات أو معرف جهاز تتبع الـ GPS.
 CREATE TABLE Buses (
     bus_id SERIAL PRIMARY KEY,
     bus_number VARCHAR(50) NOT NULL UNIQUE,
-    driver_id INT UNIQUE, -- إزالة UNIQUE إذا كنت تريد السماح لسائق بقيادة أكثر من حافلة
-    route_id INT NOT NULL,
+    seat_number INTEGER,
+    bus_route VARCHAR(255),
+    launch_date TIMESTAMP,
+    price DECIMAL(10,2),
     gps_device VARCHAR(255),
-    FOREIGN KEY (driver_id) REFERENCES Users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (route_id) REFERENCES Routes(route_id) ON DELETE CASCADE
+    driver_id INTEGER,
+    route_id,
+    CONSTRAINT fk_user
+        FOREIGN KEY (user_id)
+        REFERENCES "User"(user_id)
 );
+
+ALTER TABLE Buses
+ADD COLUMN status INTEGER DEFAULT 1 CHECK (status IN (1, 2, 3));
+
+CREATE OR REPLACE FUNCTION update_status_change_time() 
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.status IN (1, 3) AND OLD.status = 2 THEN
+        NEW.status_change_time := NOW() + INTERVAL '30 minutes';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_update_bus
+BEFORE UPDATE ON buses
+FOR EACH ROW
+EXECUTE FUNCTION update_status_change_time();
+
+ALTER TABLE Buses
+ADD COLUMN status_change_time TIMESTAMP;
+
+ALTER TABLE Buses
+ADD CONSTRAINT fk_user FOREIGN KEY (driver_id) REFERENCES "User"(user_id) ON DELETE SET NULL;
+
+ALTER TABLE Buses
+ADD CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES routes(route_id) ON DELETE CASCADE;
+
+1 =>  الباص بالمجمع
+2 => الباص على الطريق 
+3 => الباص بالجامعة
 
 
 ALTER TABLE Buses
-ADD COLUMN company_id INT REFERENCES Companies(company_id) ON DELETE SET NULL,
 ADD COLUMN seat_capacity INT NOT NULL DEFAULT 50;
+
+-- إضافة العمود الجديد لتخزين رابط الصورة
+ALTER TABLE Buses
+ADD COLUMN bus_image VARCHAR(255) DEFAULT 'https://themeenergy.com/themes/html/transfers/images/uploads/bus.jpg';
+
+-- تحديث جميع السجلات لتخزين رابط الصورة الثابت
+UPDATE Buses
+SET bus_image = 'https://themeenergy.com/themes/html/transfers/images/uploads/bus.jpg';
 #######################################
 
 
@@ -113,28 +147,6 @@ CREATE TABLE Routes (
 يمكن إضافة عمود يشير للمنطقة لتصنيف كل مسار حسب المنطقة:
 ALTER TABLE Routes
 ADD COLUMN region_id INT REFERENCES Regions(region_id) ON DELETE SET NULL;
-#######################################
-
-5. جدول المحطات (Stops)
-
-stop_id: رقم تعريف المحطة (مفتاح أساسي).
-route_id: معرف المسار (مفتاح خارجي يشير إلى Routes).
-stop_name: اسم المحطة.
-latitude و longitude: إحداثيات المحطة.
-تُستخدم هذه الجدول لتحديد المحطات التي يمر بها كل مسار، بحيث تكون العلاقة بين المسارات والمحطات واحد إلى متعدد.
-
-CREATE TABLE Stops (
-    stop_id SERIAL PRIMARY KEY, -- رقم تعريف المحطة (مفتاح أساسي)
-    route_id INT NOT NULL, -- معرف المسار (يجب أن يكون موجودًا)
-    stop_name VARCHAR(255) NOT NULL, -- اسم المحطة
-    latitude DECIMAL(9,6) NOT NULL, -- إحداثيات خط العرض
-    longitude DECIMAL(9,6) NOT NULL, -- إحداثيات خط الطول
-
-    -- ربط route_id بجدول Routes
-    CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES Routes(route_id) ON DELETE CASCADE
-);
-
-
 #######################################
 
 6. جدول تتبع GPS (GPS_Tracking)
@@ -180,52 +192,20 @@ CREATE TABLE Notifications (
     CONSTRAINT fk_bus FOREIGN KEY (bus_id) REFERENCES Buses(bus_id) ON DELETE CASCADE
 );
 
-
-8. إضافة جدول للشركة (Companies)
-حتى لو صار عندك شركة واحدة دلوقتي، نجهز الجدول لدعم المستقبل. ممكن الجدول يحتوي على:
-
-company_id: رقم تعريف الشركة (مفتاح أساسي).
-company_name: اسم الشركة.
-bus_count: عدد الباصات الثابتة التابعة للشركة.
-sql
-نسخ
-CREATE TABLE Companies (
-    company_id SERIAL PRIMARY KEY,
-    company_name VARCHAR(255) NOT NULL,
-    bus_count INT NOT NULL  -- عدد الباصات التابعة للشركة
-);
-11. إضافة جدول للمناطق (Regions)
-إذا كنت عايز ترتب المواعيد حسب المناطق، فممكن ننشئ جدول للمناطق:
-
-region_id: رقم تعريف المنطقة (مفتاح أساسي).
-region_name: اسم المنطقة.
-bus_count: عدد الباصات الثابتة الخاصة بكل منطقة.
-sql
-نسخ
-CREATE TABLE Regions (
-    region_id SERIAL PRIMARY KEY,
-    region_name VARCHAR(255) NOT NULL,
-    bus_count INT NOT NULL  -- عدد الباصات في المنطقة
-);
-
-12. إنشاء جدول للمواعيد الثابتة (Fixed_Schedules)
-بما إنك عايز مواعيد ثابتة لكل خط (مثلاً صباحي ومسائي) ومقسمة حسب أيام الأسبوع، فممكن جدول المواعيد يكون بالشكل التالي:
-
-schedule_id: رقم تعريف الميعاد (مفتاح أساسي).
-route_id: رقم تعريف المسار (مفتاح خارجي من جدول Routes).
-service_period: فترة الخدمة (مثلاً 'morning' للمساءي أو 'evening' للصباحية؛ ممكن تغير المسميات حسب متطلباتك).
-day_of_week: يوم الأسبوع (يمكن تحديد مجموعة أيام ثابتة).
-departure_time: وقت بدء الرحلة.
-CREATE TABLE Fixed_Schedules (
-    schedule_id SERIAL PRIMARY KEY,
-    route_id INT NOT NULL REFERENCES Routes(route_id) ON DELETE CASCADE,
-    service_period VARCHAR(50) NOT NULL CHECK (service_period IN ('morning', 'evening')),
-    day_of_week VARCHAR(50) NOT NULL CHECK (
-        day_of_week IN ('الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت')
-    ),
-    departure_time TIME NOT NULL
-);
 #######################################
+
+8- Profile 
+
+CREATE TABLE profile (
+    profile_id SERIAL PRIMARY KEY,
+    license_img VARCHAR(255),
+    identity_img VARCHAR(255),
+    phone_number VARCHAR(20),
+    user_id INT,
+    CONSTRAINT fk_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+);
 
 العلاقات الرئيسية:
 Users ↔ Bookings: علاقة واحد إلى متعدد (مستخدم واحد يمكنه أن يقوم بعدة حجوزات).
@@ -239,6 +219,39 @@ Users, Buses ↔ Notifications: علاقة لتسجيل إشعارات كل مس
 
 
 
+# مسارات الباصات 
 
+رغدان-عمان
+البيادر-عمان
+سحاب-عمان
+حي نزال-عمان
+جمرك عمان
+ ابو نصير-عمان
+البقعة-عمان
+ناعور-عمان
+ مجمع الشمال )طبربور(-عمان
 
+السلط 
+ الزرقاء 
+اربد
+عجلون
+جرش
+مادبا
+المفرق
 
+Raghadan - Amman
+North Complex (Tabarbour) - Amman
+Zarqa
+Al-Bayader - Amman
+Sahab - Amman
+Nazal District - Amman
+Amman Customs
+Abu Nuseir - Amman
+Al-Baqa'a - Amman
+Naour - Amman
+Salt
+Irbid
+Ajloun
+Jerash
+Madaba
+Mafraq

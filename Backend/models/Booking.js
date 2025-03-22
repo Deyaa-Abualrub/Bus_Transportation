@@ -33,18 +33,18 @@ const Booking = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    departure_location: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    arrival_location: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    departure_time: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
+    // departure_location: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: false,
+    // },
+    // arrival_location: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: false,
+    // },
+    // departure_time: {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    // },
   },
   {
     tableName: "Bookings",

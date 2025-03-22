@@ -20,7 +20,12 @@ const authenticateUser = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded Token:", decoded); // Log the decoded token
     req.user = decoded;
-    next();
+
+    // إرسال حالة المستخدم في الرد
+    return res.status(200).json({
+      message: "User authenticated",
+      user: decoded, // تضمين معلومات المستخدم في الرد
+    });
   } catch (error) {
     console.error("JWT Verification Error:", error.message);
     return res.status(401).json({ message: "Invalid token" });
