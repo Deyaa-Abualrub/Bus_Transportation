@@ -7,7 +7,6 @@ password: ,
 role: 
 stutus: 
 isdeleted: , 
-bus_id : هاي عشان اذا كان سائق اربطه بال table name buses
 
 CREATE TABLE "User" (
     user_id SERIAL PRIMARY KEY,
@@ -22,8 +21,6 @@ CREATE TABLE "User" (
         (role = 'driver' AND status IS NOT NULL) OR
         (role <> 'driver' AND status IS NULL)
     ),
-
-    bus_id INTEGER REFERENCES "Buses"(bus_id) ON DELETE SET NULL,
     isDeleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -104,8 +101,8 @@ EXECUTE FUNCTION update_status_change_time();
 ALTER TABLE Buses
 ADD COLUMN status_change_time TIMESTAMP;
 
-ALTER TABLE Buses
-ADD CONSTRAINT fk_user FOREIGN KEY (driver_id) REFERENCES "User"(user_id) ON DELETE SET NULL;
+ALTER TABLE "Buses"
+ADD CONSTRAINT fk_driver FOREIGN KEY (driver_id) REFERENCES "Driver"(driver_id) ON DELETE SET NULL;
 
 ALTER TABLE Buses
 ADD CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES routes(route_id) ON DELETE CASCADE;
@@ -206,6 +203,23 @@ CREATE TABLE profile (
         FOREIGN KEY (user_id)
         REFERENCES users(user_id)
 );
+
+ALTER TABLE "profile"
+ADD COLUMN bus_id INTEGER REFERENCES "Buses"(bus_id) ON DELETE SET NULL;
+
+ALTER TABLE "profile"
+ADD COLUMN isdeleted BOOLEAN NOT NULL DEFAULT FALSE;
+
+ALTER TABLE "profile"
+RENAME TO "driver";
+
+ALTER TABLE "driver"
+RENAME COLUMN "profile_id" TO "driver_id";
+
+ALTER TABLE "driver"
+DROP COLUMN "user_id";
+
+
 
 العلاقات الرئيسية:
 Users ↔ Bookings: علاقة واحد إلى متعدد (مستخدم واحد يمكنه أن يقوم بعدة حجوزات).

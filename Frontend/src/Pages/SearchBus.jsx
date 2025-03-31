@@ -27,8 +27,6 @@ const SearchBus = () => {
     fetchBuses();
   }, [from, to, searchType]);
 
-  
-
   return (
     <div className="container-bus p-6 sm:p-8 rounded-xl shadow-lg mx-auto my-8 w-11/12 sm:w-4/5 border border-gray-100 bg-gradient-to-r from-white to-[var(--third-color)] bg-opacity-30">
       {/* Header with accent line */}
@@ -38,12 +36,12 @@ const SearchBus = () => {
         </h3>
         <div className="absolute w-20 h-1 bg-[var(--primary-color)] bottom-0 left-0 mt-1"></div>
       </div>
-  
+
       {/* Booking Form */}
       <div className="mb-8">
         <BookingForm></BookingForm>
       </div>
-  
+
       {/* Bus Cards */}
       <div className="space-y-6">
         {buses.length === 0 ? (
@@ -88,7 +86,7 @@ const SearchBus = () => {
                   Available
                 </div>
               </div>
-  
+
               {/* Bus Information */}
               <div className="bus-info flex-1">
                 <div className="flex items-center mb-2">
@@ -147,7 +145,7 @@ const SearchBus = () => {
                   Bus Number: {bus.bus_number}
                 </div>
               </div>
-  
+
               {/* Price and Seats with visual indicators */}
               <div className="details flex justify-between lg:justify-center items-center lg:flex-col flex-1 mt-4 lg:mt-0 border-t lg:border-t-0 lg:border-l border-gray-200 pt-4 lg:pt-0 lg:pl-6">
                 <div className="price-tag bg-white bg-opacity-80 px-4 py-2 rounded-lg mr-2 xl:mr-0 lg:mb-2 w-full text-center shadow-sm">
@@ -164,7 +162,7 @@ const SearchBus = () => {
                   </span>
                   <p className="font-medium">
                     <span className="text-lg font-bold text-[var(--primary-color)]">
-                      {bus.seat_number}
+                      {bus.seat_available}
                     </span>
                     <span className="text-sm text-[var(--text-color)]">
                       {" "}
@@ -173,7 +171,7 @@ const SearchBus = () => {
                   </p>
                 </div>
               </div>
-  
+
               {/* View Seats Button */}
               <div className="view-seats flex justify-center items-center mt-4 lg:mt-0 lg:ml-4">
                 <button className="w-full lg:w-auto bg-[var(--primary-color)] hover:bg-[var(--secondary-color)] text-white py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg">
@@ -198,13 +196,8 @@ const SearchBus = () => {
       </div>
     </div>
   );
-  
 };
 
 export default SearchBus;
- 
 
-
-
-
-//  هاض القسم ضل تزبيط الصورة والفورم يتناسب مع التصميم 
+//  هاض القسم ضل تزبيط الصورة والفورم يتناسب مع التصميم

@@ -27,7 +27,7 @@ const searchBus = async (req, res) => {
           "bus_route",
           "bus_number",
           "price",
-          "seat_number",
+          "seat_available",
           "status_change_time",
         ],
       });
@@ -41,7 +41,7 @@ const searchBus = async (req, res) => {
           "bus_route",
           "bus_number",
           "price",
-          "seat_number",
+          "seat_available",
           "launch_date",
         ],
       });

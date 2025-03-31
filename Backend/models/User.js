@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const Bus = require("./Buses");
 
 const User = sequelize.define(
   "User",
@@ -33,8 +32,8 @@ const User = sequelize.define(
     },
     status: {
       type: DataTypes.STRING(50),
-      allowNull: true, 
-      defaultValue: null, 
+      allowNull: true,
+      defaultValue: null,
       validate: {
         isIn: [["pending", "approved", "rejected"]],
         checkStatus(value) {
@@ -48,15 +47,6 @@ const User = sequelize.define(
           }
         },
       },
-    },
-    bus_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: Bus,
-        key: "bus_id",
-      },
-      onDelete: "SET NULL",
     },
     isdeleted: {
       type: DataTypes.BOOLEAN,

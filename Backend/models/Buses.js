@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const User = require("./User");
 const Route = require("./Route");
+const Driver = require("./Driver");
 
 const Bus = sequelize.define(
   "Buses",
@@ -16,7 +16,7 @@ const Bus = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    seat_number: {
+    seat_available: {
       type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: 50,
@@ -25,8 +25,8 @@ const Bus = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: User,
-        key: "user_id",
+        model: Driver,
+        key: "driver_id",
       },
       onDelete: "SET NULL",
     },
