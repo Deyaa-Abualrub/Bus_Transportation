@@ -5,8 +5,10 @@ import lr_video from "../assets/lr-video.mp4";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/checkoutSlice";
 
-const App = () => {
+const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -14,6 +16,8 @@ const App = () => {
     email: "",
     password: "",
   });
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -26,16 +30,49 @@ const App = () => {
     });
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:4000/auth/signin",
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        { withCredentials: true } // تأكد من أنه يتم إرسال الـ cookies بشكل صحيح
+      );
+      setLoading(false);
+
+      // استخدام dispatch لتحديث الـ Redux store
+      dispatch(setUser({ username: formData.full_name })); // هنا يمكنك إرسال الـ username و email أو أي بيانات أخرى
+
+      Swal.fire({
+        title: "Welcome back!",
+        text: res.data.message,
+        icon: "success",
+        confirmButtonColor: "#1f2937",
+      });
+      navigate("/"); // إعادة التوجيه بعد تسجيل الدخول الناجح
+    } catch (error) {
+      setLoading(false);
+      Swal.fire({
+        title: "Error occurred",
+        text: error.response?.data?.message || "Login failed",
+        icon: "error",
+        confirmButtonColor: "#eb2323",
+      });
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Sending data to backend:", formData); // Log data being sent
-
     setLoading(true);
     try {
       await axios.post("http://localhost:4000/auth/signup", formData, {
         withCredentials: true,
       });
-      console.log(formData);
+
       setLoading(false);
       Swal.fire({
         title: "Welcome to the app!",
@@ -43,6 +80,11 @@ const App = () => {
         icon: "success",
         confirmButtonColor: "#1f2937",
       });
+
+      // استخدام dispatch لتحديث الـ Redux store بعد التسجيل
+      dispatch(
+        setUser({ username: formData.full_name })
+      ); // هنا يمكنك إرسال الـ username و email أو أي بيانات أخرى
 
       Swal.fire({
         title: "Are you a user or a driver?",
@@ -70,7 +112,6 @@ const App = () => {
       });
     } catch (error) {
       setLoading(false);
-      console.error("Error during registration:", error); // Log error for debugging
       Swal.fire({
         title: "Error occurred",
         text: error.response?.data?.message || "Registration failed",
@@ -80,36 +121,90 @@ const App = () => {
     }
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        "http://localhost:4000/auth/signin",
-        {
-          email: formData.email,
-          password: formData.password,
-        },
-        { withCredentials: true }
-      );
-      setLoading(false);
-      Swal.fire({
-        title: "Welcome back!",
-        text: res.data.message,
-        icon: "success",
-        confirmButtonColor: "#1f2937",
-      });
-      navigate("/");
-    } catch (error) {
-      setLoading(false);
-      Swal.fire({
-        title: "Error occurred",
-        text: error.response?.data?.message || "Login failed",
-        icon: "error",
-        confirmButtonColor: "#eb2323",
-      });
-    }
-  };
+  // const handleRegister = async (e) => {
+  //   e.preventDefault();
+  //   console.log("Sending data to backend:", formData); // Log data being sent
+
+  //   setLoading(true);
+  //   try {
+  //     await axios.post("http://localhost:4000/auth/signup", formData, {
+  //       withCredentials: true,
+  //     });
+  //     console.log(formData);
+  //     setLoading(false);
+  //     Swal.fire({
+  //       title: "Welcome to the app!",
+  //       text: "Registration successful.",
+  //       icon: "success",
+  //       confirmButtonColor: "#1f2937",
+  //     });
+
+  //     Swal.fire({
+  //       title: "Are you a user or a driver?",
+  //       icon: "question",
+  //       showCancelButton: true,
+  //       confirmButtonText: "User",
+  //       cancelButtonText: "Driver",
+  //       confirmButtonColor: "#1f2937",
+  //       cancelButtonColor: "#eb2323",
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         Swal.fire({
+  //           title: "You are selected as a user!",
+  //           icon: "success",
+  //           confirmButtonColor: "#1f2937",
+  //         });
+  //         navigate("/"); // Redirect to home page if "User" is selected
+  //       } else if (result.isDismissed) {
+  //         Swal.fire({
+  //           title: "You are selected as a driver!",
+  //           icon: "success",
+  //           confirmButtonColor: "#1f2937",
+  //         });
+  //       }
+  //     });
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error during registration:", error); // Log error for debugging
+  //     Swal.fire({
+  //       title: "Error occurred",
+  //       text: error.response?.data?.message || "Registration failed",
+  //       icon: "error",
+  //       confirmButtonColor: "#eb2323",
+  //     });
+  //   }
+  // };
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     const res = await axios.post(
+  //       "http://localhost:4000/auth/signin",
+  //       {
+  //         email: formData.email,
+  //         password: formData.password,
+  //       },
+  //       { withCredentials: true }
+  //     );
+  //     setLoading(false);
+  //     Swal.fire({
+  //       title: "Welcome back!",
+  //       text: res.data.message,
+  //       icon: "success",
+  //       confirmButtonColor: "#1f2937",
+  //     });
+  //     navigate("/");
+  //   } catch (error) {
+  //     setLoading(false);
+  //     Swal.fire({
+  //       title: "Error occurred",
+  //       text: error.response?.data?.message || "Login failed",
+  //       icon: "error",
+  //       confirmButtonColor: "#eb2323",
+  //     });
+  //   }
+  // };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -288,4 +383,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Login;

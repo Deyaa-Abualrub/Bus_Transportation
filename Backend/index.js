@@ -7,6 +7,7 @@ const path = require("path");
 const userRoutes = require("./routes/userRoutes");
 const contactMessage = require("./routes/contactMessageRoutes");
 const searchBus = require("./routes/searchBusRoutes");
+const checkout = require("./routes/checkoutRoutes");
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use(
 // app.use("/bus", userRoutes);
 app.use("/bus", contactMessage);
 app.use("/bus", searchBus);
+app.use("/bus", checkout);
 app.use("/auth", userRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

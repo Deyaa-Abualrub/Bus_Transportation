@@ -11,7 +11,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const navigation = [
   { name: "Home", path: "/", current: true },
@@ -27,21 +27,6 @@ function classNames(...classes) {
 export default function Navbar() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // useEffect(() => {
-  //   // Check if the user is logged in
-  //   const checkAuth = async () => {
-  //     try {
-  //       const response = await axios.get("http://localhost:4000/auth/status", {
-  //         withCredentials: true,
-  //       });
-  //       setIsAuthenticated(response.data.isAuthenticated);
-  //     } catch (error) {
-  //       setIsAuthenticated(false);
-  //     }
-  //   };
-  //   checkAuth();
-  // }, []);
 
   async function handelLogout() {
     try {

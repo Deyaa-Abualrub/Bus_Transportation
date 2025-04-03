@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const authenticateUser = (req, res, next) => {
   let token =
-    req.cookies.token ||
+    req.cookies.authtoken || // تغيير "token" إلى "authtoken"
     (req.headers.authorization
       ? req.headers.authorization.split(" ")[1]
       : null);
@@ -33,7 +33,7 @@ const authenticateUser = (req, res, next) => {
 };
 
 const authenticateAdmin = (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.authtoken; // تغيير "token" إلى "authtoken"
 
   if (!token) {
     return res
