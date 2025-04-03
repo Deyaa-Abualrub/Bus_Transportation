@@ -53,6 +53,11 @@ const User = sequelize.define(
       allowNull: false,
       defaultValue: false,
     },
+    // google_id: {
+    //   type: DataTypes.STRING,  // تغيير الـ google_id إلى BIGINT
+    //   allowNull: true,
+    //   unique: true,
+    // },
   },
   {
     tableName: "User",

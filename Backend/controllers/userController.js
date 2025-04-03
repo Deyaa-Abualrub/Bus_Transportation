@@ -122,6 +122,9 @@ const signin = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       token,
+      user: {
+        full_name: user.full_name, // إضافة اسم المستخدم
+      },
     });
   } catch (error) {
     return res

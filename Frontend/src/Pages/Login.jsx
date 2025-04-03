@@ -40,12 +40,17 @@ const Login = () => {
           email: formData.email,
           password: formData.password,
         },
-        { withCredentials: true } // تأكد من أنه يتم إرسال الـ cookies بشكل صحيح
+        { withCredentials: true }
       );
+
+      const { token, user } = res.data; // التأكد من أن user يتضمن full_name
+      localStorage.setItem("authtoken", token); // تخزين التوكن
+      localStorage.setItem("user", user.full_name); // تخزين الاسم في localStorage
+
       setLoading(false);
 
-      // استخدام dispatch لتحديث الـ Redux store
-      dispatch(setUser({ username: formData.full_name })); // هنا يمكنك إرسال الـ username و email أو أي بيانات أخرى
+      // تحديث الـ state للـ Redux
+      dispatch(setUser({ username: user.full_name })); // هنا يتم تخزين الاسم في الـ Redux store
 
       Swal.fire({
         title: "Welcome back!",
@@ -53,7 +58,11 @@ const Login = () => {
         icon: "success",
         confirmButtonColor: "#1f2937",
       });
+
       navigate("/"); // إعادة التوجيه بعد تسجيل الدخول الناجح
+
+      // تحديث حالة التوثيق في الـ localStorage
+      localStorage.setItem("isAuthenticated", true);
     } catch (error) {
       setLoading(false);
       Swal.fire({
@@ -69,9 +78,17 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:4000/auth/signup", formData, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        "http://localhost:4000/auth/signup",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+
+      const { token } = res.data; // استخراج التوكن وبيانات المستخدم
+      localStorage.setItem("authtoken", token);
+      localStorage.setItem("user", formData.full_name);
 
       setLoading(false);
       Swal.fire({
@@ -81,10 +98,8 @@ const Login = () => {
         confirmButtonColor: "#1f2937",
       });
 
-      // استخدام dispatch لتحديث الـ Redux store بعد التسجيل
-      dispatch(
-        setUser({ username: formData.full_name })
-      ); // هنا يمكنك إرسال الـ username و email أو أي بيانات أخرى
+      // تحديث الـ state للـ Redux
+      dispatch(setUser({ username: formData.full_name }));
 
       Swal.fire({
         title: "Are you a user or a driver?",
@@ -110,6 +125,9 @@ const Login = () => {
           });
         }
       });
+
+      // تحديث حالة التوثيق في الـ localStorage
+      localStorage.setItem("isAuthenticated", true);
     } catch (error) {
       setLoading(false);
       Swal.fire({
@@ -120,91 +138,6 @@ const Login = () => {
       });
     }
   };
-
-  // const handleRegister = async (e) => {
-  //   e.preventDefault();
-  //   console.log("Sending data to backend:", formData); // Log data being sent
-
-  //   setLoading(true);
-  //   try {
-  //     await axios.post("http://localhost:4000/auth/signup", formData, {
-  //       withCredentials: true,
-  //     });
-  //     console.log(formData);
-  //     setLoading(false);
-  //     Swal.fire({
-  //       title: "Welcome to the app!",
-  //       text: "Registration successful.",
-  //       icon: "success",
-  //       confirmButtonColor: "#1f2937",
-  //     });
-
-  //     Swal.fire({
-  //       title: "Are you a user or a driver?",
-  //       icon: "question",
-  //       showCancelButton: true,
-  //       confirmButtonText: "User",
-  //       cancelButtonText: "Driver",
-  //       confirmButtonColor: "#1f2937",
-  //       cancelButtonColor: "#eb2323",
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         Swal.fire({
-  //           title: "You are selected as a user!",
-  //           icon: "success",
-  //           confirmButtonColor: "#1f2937",
-  //         });
-  //         navigate("/"); // Redirect to home page if "User" is selected
-  //       } else if (result.isDismissed) {
-  //         Swal.fire({
-  //           title: "You are selected as a driver!",
-  //           icon: "success",
-  //           confirmButtonColor: "#1f2937",
-  //         });
-  //       }
-  //     });
-  //   } catch (error) {
-  //     setLoading(false);
-  //     console.error("Error during registration:", error); // Log error for debugging
-  //     Swal.fire({
-  //       title: "Error occurred",
-  //       text: error.response?.data?.message || "Registration failed",
-  //       icon: "error",
-  //       confirmButtonColor: "#eb2323",
-  //     });
-  //   }
-  // };
-
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   try {
-  //     const res = await axios.post(
-  //       "http://localhost:4000/auth/signin",
-  //       {
-  //         email: formData.email,
-  //         password: formData.password,
-  //       },
-  //       { withCredentials: true }
-  //     );
-  //     setLoading(false);
-  //     Swal.fire({
-  //       title: "Welcome back!",
-  //       text: res.data.message,
-  //       icon: "success",
-  //       confirmButtonColor: "#1f2937",
-  //     });
-  //     navigate("/");
-  //   } catch (error) {
-  //     setLoading(false);
-  //     Swal.fire({
-  //       title: "Error occurred",
-  //       text: error.response?.data?.message || "Login failed",
-  //       icon: "error",
-  //       confirmButtonColor: "#eb2323",
-  //     });
-  //   }
-  // };
 
   const handleGoogleSignIn = async () => {
     try {

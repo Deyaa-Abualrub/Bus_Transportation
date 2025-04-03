@@ -12,11 +12,11 @@ export default function WhyChooseUsSection() {
           />
           <div className="absolute bottom-[-100px] left-10 bg-gray-800 text-white p-6 rounded-md max-w-[400px] ">
             <h3 className="text-xl font-semibold mb-2">
-              We Provide Best Bus For You
+              Best Transport Service for Al-Hashamieh University
             </h3>
             <p className="text-base mb-2">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore.
+              We provide comfortable and safe transportation for all students,
+              ensuring punctuality and reliability.
             </p>
             <a href="#" className="text-white font-bold">
               View Projects →
@@ -25,36 +25,35 @@ export default function WhyChooseUsSection() {
         </div>
 
         <div className="flex-1 bg-gray-800 text-white p-10 rounded-xl">
-          <h2 className="text-4xl font-bold">Why Choose Us</h2>
+          <h2 className="text-4xl font-bold">Why Choose Hekaya Transport</h2>
           <h4 className="text-xl mt-4">
-            We Are Experts In
-            <span className="border-b-4 border-red-600">Bus Charter</span>{" "}
-            Company Since <strong>1997</strong>
+            Providing Reliable University Bus Services Since{" "}
+            <strong>2014</strong>
           </h4>
           <p className="text-base text-gray-400 mt-4">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo.
+            We are committed to offering safe, comfortable, and timely bus
+            services for students of Al-Hoshamieh University. With a fleet of
+            well-maintained buses, we ensure that every student reaches their
+            destination on time.
           </p>
 
           <div className="flex gap-8 mt-8 justify-around">
             <div className="text-center">
               <span className="text-4xl text-red-600">🚌</span>
-              <h3 className="text-3xl mt-2">25 +</h3>
-              <p className="text-base text-gray-400 mt-2">Buses Ready</p>
+              <h3 className="text-3xl mt-2">30 +</h3>
+              <p className="text-base text-gray-400 mt-2">Buses Available</p>
             </div>
 
             <div className="text-center">
               <span className="text-4xl text-red-600">🏆</span>
-              <h3 className="text-3xl mt-2">2,640 +</h3>
-              <p className="text-base text-gray-400 mt-2">Satisfied Customer</p>
+              <h3 className="text-3xl mt-2">10,000 +</h3>
+              <p className="text-base text-gray-400 mt-2">Satisfied Students</p>
             </div>
 
             <div className="text-center">
               <span className="text-4xl text-red-600">👥</span>
-              <h3 className="text-3xl mt-2">75 +</h3>
-              <p className="text-base text-gray-400 mt-2">Professional Team</p>
+              <h3 className="text-3xl mt-2">100 +</h3>
+              <p className="text-base text-gray-400 mt-2">Dedicated Staff</p>
             </div>
           </div>
         </div>

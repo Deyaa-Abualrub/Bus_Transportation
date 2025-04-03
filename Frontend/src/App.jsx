@@ -8,6 +8,7 @@ import Contact from "./Pages/Contact";
 import SearchBus from "./Pages/SearchBus";
 import Checkout from "./Pages/Checkout";
 
+
 function App() {
   const location = useLocation();
   const hideNavAndFooter = location.pathname === "/signin";
