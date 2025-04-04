@@ -2,42 +2,63 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Bus = require("./Buses");
 
-  const Driver = sequelize.define(
-    "Driver", 
-    {
-      driver_id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
+const Driver = sequelize.define(
+  "Driver",
+  {
+    driver_id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    license_img: {
+      type: DataTypes.STRING(255),
+    },
+    non_conviction_img: {
+      type: DataTypes.STRING(255),
+    },
+    full_name: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    phone_number: {
+      type: DataTypes.STRING(20),
+    },
+    bus_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: Bus,
+        key: "bus_id",
       },
-      license_img: {
-        type: DataTypes.STRING(255),
-      },
-      identity_img: {
-        type: DataTypes.STRING(255),
-      },
-      phone_number: {
-        type: DataTypes.STRING(20),
-      },
-      bus_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: Bus,
-          key: "bus_id",
-        },
-        onDelete: "SET NULL", // عندما يتم حذف سجل من جدول Buses، سيتم تعيين هذا العمود إلى NULL
-      },
-      isdeleted: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+      onDelete: "SET NULL",
+    },
+    isdeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    status: {
+      type: DataTypes.STRING(50),
+      allowNull: false, // هذا يجعل الحقل لا يقبل قيمة null
+      defaultValue: "pending", // تعيين القيمة الافتراضية لـ status إلى "pending"
+      validate: {
+        isIn: [["pending", "approved", "rejected"]], // التأكد من أن القيم هي واحدة من هذه
       },
     },
-    {
-      tableName: "driver",
-      timestamps: false, 
-    }
-  );
+  },
+  {
+    tableName: "driver",
+    timestamps: false,
+  }
+);
 
 module.exports = Driver;

@@ -227,6 +227,19 @@ const Login = () => {
                 onSuccess={handleGoogleSignIn}
                 onError={() => Swal.error("Google login failed")}
                 useOneTap
+                render={(renderProps) => (
+                  <button
+                    {...renderProps}
+                    className="w-full bg-blue-500 text-white py-3 rounded-md flex items-center justify-center gap-3 font-medium hover:bg-blue-600 transition-colors duration-300 mt-4"
+                  >
+                    <img
+                      src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png"
+                      alt="Google"
+                      className="w-6 h-6"
+                    />
+                    Continue with Google
+                  </button>
+                )}
               />
 
               <div className="relative">

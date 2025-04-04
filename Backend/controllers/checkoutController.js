@@ -1,6 +1,6 @@
-const Booking = require("../models/Booking"); 
-const User = require("../models/User"); 
-const Bus = require("../models/Buses"); 
+const Booking = require("../models/Booking");
+const User = require("../models/User");
+const Bus = require("../models/Buses");
 
 const checkoutController = async (req, res) => {
   try {
@@ -33,7 +33,6 @@ const checkoutController = async (req, res) => {
       return res.status(400).json({ message: "No seats available" });
     }
 
-    // Start the payment process based on the payment method
     let paymentMessage;
     if (paymentMethod === "cash") {
       console.log("Processing payment with Cash");
@@ -51,7 +50,7 @@ const checkoutController = async (req, res) => {
     // Create a new booking in the database
     const newBooking = await Booking.create({
       user_id: userId,
-      bus_id: busNumber, // Assuming bus_id corresponds to busNumber, if it's different, adjust accordingly
+      bus_id: busNumber, // Assuming bus_id corresponds to busNumber
       seat_number: seatNumber,
     });
 

@@ -30,31 +30,13 @@ const User = sequelize.define(
         isIn: [["user", "driver", "admin"]],
       },
     },
-    status: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      defaultValue: null,
-      validate: {
-        isIn: [["pending", "approved", "rejected"]],
-        checkStatus(value) {
-          if (this.role === "driver" && !value) {
-            throw new Error(
-              "Drivers must have a status (pending, approved, rejected)."
-            );
-          }
-          if (this.role !== "driver" && value !== null) {
-            throw new Error("Only drivers can have a status.");
-          }
-        },
-      },
-    },
     isdeleted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
     google_id: {
-      type: DataTypes.STRING,  // تغيير الـ google_id إلى BIGINT
+      type: DataTypes.STRING, // تغيير الـ google_id إلى BIGINT
       allowNull: true,
       unique: true,
     },

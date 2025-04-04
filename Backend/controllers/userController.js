@@ -4,11 +4,9 @@ const sequelize = require("../config/database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
-// const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_JWT_SECRET";
+const JWT_SECRET = process.env.JWT_SECRET;
 
-// ✅ تعريف مخطط التحقق باستخدام Joi مع الشروط المطلوبة
 const signupSchema = Joi.object({
   full_name: Joi.string()
     .regex(/^\S+\s+\S+\s+\S+\s+\S+$/) // التأكد أن الاسم يحتوي على 4 مقاطع على الأقل مفصولة بمسافة

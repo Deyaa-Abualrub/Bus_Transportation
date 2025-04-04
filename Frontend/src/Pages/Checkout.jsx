@@ -25,9 +25,11 @@ const Checkout = () => {
       price: totalPrice,
       seatAvailable: bus.seatAvailable - seatCount,
       paymentMethod,
-      userId: user.id,
+      userId: user.user_id,
       seatNumber: seatCount,
     };
+
+    console.log(paymentData);
 
     try {
       let response;
@@ -55,7 +57,7 @@ const Checkout = () => {
         confirmButtonColor: "#1f2937",
       });
 
-      navigate("/");
+      navigate("/"); // Redirect after success
     } catch (error) {
       console.error("Payment failed", error);
       Swal.fire({
