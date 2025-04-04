@@ -126,7 +126,7 @@ export default function Navbar() {
                 <Menu as="div" className="relative ml-3">
                   <div>
                     <MenuButton className="relative flex items-center space-x-3 text-sm text-white bg-gray-800 p-2 rounded-full">
-                      <span>{userName}</span> 
+                      <span>{userName}</span>
                       <FaUserCircle className="w-8 h-8 text-white" />
                       {/* أيقونة المستخدم */}
                     </MenuButton>

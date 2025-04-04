@@ -5,9 +5,12 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const userRoutes = require("./routes/userRoutes");
+const googleRoutes = require("./routes/googleRoutes");
 const contactMessage = require("./routes/contactMessageRoutes");
 const searchBus = require("./routes/searchBusRoutes");
 const checkout = require("./routes/checkoutRoutes");
+const passport = require("passport");
+const session = require("express-session");
 
 dotenv.config();
 
@@ -16,6 +19,19 @@ app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(
+  session({
+    secret: process.env.CLIENT_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
+
+// إعداد Passport.js
+app.use(passport.initialize());
+app.use(passport.session());
 
 const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
 
@@ -31,6 +47,7 @@ app.use("/bus", contactMessage);
 app.use("/bus", searchBus);
 app.use("/bus", checkout);
 app.use("/auth", userRoutes);
+app.use("/auth", googleRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

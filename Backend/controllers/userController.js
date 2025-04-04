@@ -138,34 +138,8 @@ const logoutUser = (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
-// const googleSignin = (req, res, next) => {
-//   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
-// };
-
-// const googleSigninCallback = (req, res, next) => {
-//   passport.authenticate("google", { session: false }, (err, user) => {
-//     if (err || !user) {
-//       return res.status(500).json({ message: "Google authentication failed" });
-//     }
-
-//     const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-//       expiresIn: "1h",
-//     });
-
-//     res.cookie("authToken", token, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       maxAge: 3600000,
-//     });
-
-//     return res.redirect(`http://localhost:5173?token=${token}`);
-//   })(req, res, next);
-// };
-
 module.exports = {
   signup,
   signin,
   logoutUser,
-  // googleSignin,
-  // googleSigninCallback,
 };
