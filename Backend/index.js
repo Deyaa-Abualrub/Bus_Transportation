@@ -11,6 +11,7 @@ const searchBus = require("./routes/searchBusRoutes");
 const checkout = require("./routes/checkoutRoutes");
 const passport = require("passport");
 const session = require("express-session");
+const driverRoutes = require("./routes/driverRoutes");
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use(
 app.use("/bus", contactMessage);
 app.use("/bus", searchBus);
 app.use("/bus", checkout);
+app.use("/bus/driver", driverRoutes);
 app.use("/auth", userRoutes);
 app.use("/auth", googleRoutes);
 

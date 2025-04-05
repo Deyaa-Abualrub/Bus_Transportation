@@ -7,7 +7,9 @@ import About from "./Pages/About";
 import Contact from "./Pages/Contact";
 import SearchBus from "./Pages/SearchBus";
 import Checkout from "./Pages/Checkout";
-import DriverForm from "./Component/DriverForm";
+import DriverRegister from "./Component/DriverRegister";
+import DriverLogin from "./Component/DriverLogin";
+import Profile from "./Pages/Profile";
 
 function App() {
   const location = useLocation();
@@ -23,7 +25,9 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/searchbus" element={<SearchBus />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/driverform" element={<DriverForm />} />
+        <Route path="/driver-register" element={<DriverRegister />} />
+        <Route path="/driver-login" element={<DriverLogin />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       {!hideNavAndFooter && <Footer />}
     </>

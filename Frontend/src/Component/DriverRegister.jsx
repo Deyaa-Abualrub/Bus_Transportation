@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 
-const DriverRegistrationForm = () => {
+const DriverRegistr = () => {
   const {
     register,
     handleSubmit,
@@ -11,6 +14,7 @@ const DriverRegistrationForm = () => {
   const [nonConvictionFile, setNonConvictionFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -32,20 +36,37 @@ const DriverRegistrationForm = () => {
         formData.append("non_conviction_img", nonConvictionFile);
       }
 
-      const response = await fetch("/api/drivers/register", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await axios.post(
+        "http://localhost:4000/bus/driver/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage("Registration successful!");
+      if (response.status === 200 || response.status === 201) {
+        // Show success alert
+        Swal.fire({
+          title: "Registration Successful!",
+          text: "You have successfully registered as a driver.",
+          icon: "success",
+          confirmButtonText: "Continue",
+          confirmButtonColor: "var(--secondary-color)",
+        }).then(() => {
+          // Redirect to home page
+          navigate("/home");
+        });
       } else {
-        setMessage(`Error: ${result.message || "Something went wrong"}`);
+        setMessage(`Error: ${response.data.message || "Something went wrong"}`);
       }
     } catch (error) {
-      setMessage("Error connecting to server");
+      setMessage(
+        `Error: ${
+          error.response?.data?.message || "Error connecting to server"
+        }`
+      );
       console.error("Error submitting form:", error);
     } finally {
       setLoading(false);
@@ -153,9 +174,11 @@ const DriverRegistrationForm = () => {
 
             <div className="mt-6 hidden md:block">
               <p className="text-sm opacity-70">Already have an account?</p>
-              <button className="mt-2 w-full py-2 px-4 border border-white border-opacity-50 rounded-md text-sm font-medium transition-all duration-200">
-                Sign In
-              </button>
+              <Link to="/driver-login">
+                <button className="mt-2 w-full py-2 px-4 border border-white border-opacity-50 rounded-md text-sm font-medium transition-all duration-200">
+                  Sign In
+                </button>
+              </Link>
             </div>
           </div>
 
@@ -613,13 +636,14 @@ const DriverRegistrationForm = () => {
                 <p className="text-sm text-gray-500">
                   Already have an account?
                 </p>
-                <a
-                  href="#"
-                  className="mt-2 inline-block font-medium"
-                  style={{ color: "var(--secondary-color)" }}
-                >
-                  Sign In
-                </a>
+                <Link to="/driver-login">
+                  <button
+                    className="mt-2 inline-block font-medium"
+                    style={{ color: "var(--secondary-color)" }}
+                  >
+                    Sign In
+                  </button>
+                </Link>
               </div>
             </form>
           </div>
@@ -629,4 +653,4 @@ const DriverRegistrationForm = () => {
   );
 };
 
-export default DriverRegistrationForm;
+export default DriverRegistr;

@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: {
-    username: "", // يمكنك استبدال هذا بالقيمة الفعلية
+    user_id: null, // إضافة user_id
+    username: "",
   },
   bus: {
     busRoute: "",
@@ -18,6 +19,7 @@ const checkoutSlice = createSlice({
   reducers: {
     // تعيين معلومات المستخدم
     setUser: (state, action) => {
+      state.user.user_id = action.payload.user_id; // تعيين user_id
       state.user.username = action.payload.username;
     },
     // تعيين معلومات الحافلة

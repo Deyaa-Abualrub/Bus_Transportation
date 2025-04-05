@@ -52,6 +52,16 @@ CREATE TABLE Bookings (
 
     -- ربط bus_id بجدول Buses
     CONSTRAINT fk_bus FOREIGN KEY (bus_id) REFERENCES Buses(bus_id) ON DELETE CASCADE
+
+        payment_method: {
+      type: DataTypes.ENUM("credit_card", "paypal", "cash"),
+      allowNull: false,
+    },
+    payment_status: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: "pending", // Default value as 'pending'
+    },
 );
 
 #######################################
@@ -106,6 +116,10 @@ ADD CONSTRAINT fk_driver FOREIGN KEY (driver_id) REFERENCES "Driver"(driver_id) 
 
 ALTER TABLE Buses
 ADD CONSTRAINT fk_route FOREIGN KEY (route_id) REFERENCES routes(route_id) ON DELETE CASCADE;
+
+ALTER TABLE "Buses"
+  ALTER COLUMN "bus_number" TYPE VARCHAR(255);
+
 
 1 =>  الباص بالمجمع
 2 => الباص على الطريق 

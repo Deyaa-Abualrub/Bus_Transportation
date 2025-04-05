@@ -31,12 +31,8 @@ const signinSchema = Joi.object({
 
 const signup = async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Log incoming data
-
-    // التحقق من البيانات عبر Joi
     const { error } = signupSchema.validate(req.body);
     if (error) {
-      console.log("Validation Error:", error.details[0].message); // Log validation errors
       return res.status(400).json({ message: error.details[0].message });
     }
 
@@ -45,13 +41,11 @@ const signup = async (req, res) => {
     // تحقق إذا كان البريد الإلكتروني مسجلاً مسبقاً
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      console.log("Email already exists");
       return res.status(400).json({ message: "Email is already registered" });
     }
 
     // تشفير كلمة المرور
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Hashed Password:", hashedPassword); // Log hashed password
 
     // إنشاء مستخدم جديد في قاعدة البيانات
     const newUser = await User.create({
@@ -62,7 +56,7 @@ const signup = async (req, res) => {
 
     // إنشاء JWT
     const token = jwt.sign(
-      { userId: newUser.id, email: newUser.email },
+      { userId: newUser.user_id, email: newUser.email },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -76,13 +70,12 @@ const signup = async (req, res) => {
       message: "Signup successful",
       token,
       user: {
-        id: newUser.id,
+        user_id: newUser.user_id, // إرجاع الـ user_id هنا
         full_name: newUser.full_name,
         email: newUser.email,
       },
     });
   } catch (error) {
-    console.error("Signup Error:", error); // Log any errors
     return res
       .status(500)
       .json({ message: "Signup failed", error: error.message });
@@ -108,9 +101,13 @@ const signin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: user.user_id, email: user.email },
+      JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     res.cookie("authToken", token, {
       httpOnly: true,
@@ -121,7 +118,8 @@ const signin = async (req, res) => {
       message: "Login successful",
       token,
       user: {
-        full_name: user.full_name, // إضافة اسم المستخدم
+        user_id: user.user_id, // إرجاع الـ user_id هنا
+        full_name: user.full_name,
       },
     });
   } catch (error) {
@@ -136,8 +134,69 @@ const logoutUser = (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
+const profile = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      user: {
+        user_id: user.user_id,
+        full_name: user.full_name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching user profile", error: error.message });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const { full_name, email, password } = req.body;
+
+    const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // إذا كان هناك تغيير في كلمة المرور، نقوم بتشفيرها
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    user.full_name = full_name || user.full_name;
+    user.email = email || user.email;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        user_id: user.user_id,
+        full_name: user.full_name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error updating user profile", error: error.message });
+  }
+};
+
 module.exports = {
   signup,
   signin,
   logoutUser,
+  profile,
+  updateProfile,
 };

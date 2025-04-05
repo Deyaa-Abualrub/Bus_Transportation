@@ -1,5 +1,4 @@
 const Booking = require("../models/Booking");
-const User = require("../models/User");
 const Bus = require("../models/Buses");
 
 const checkoutController = async (req, res) => {
@@ -13,6 +12,8 @@ const checkoutController = async (req, res) => {
       userId,
       seatNumber,
     } = req.body;
+
+    console.log("Received payment data:", req.body);
 
     if (
       !busRoute ||
@@ -50,13 +51,14 @@ const checkoutController = async (req, res) => {
     // Create a new booking in the database
     const newBooking = await Booking.create({
       user_id: userId,
-      bus_id: busNumber, // Assuming bus_id corresponds to busNumber
+      bus_number: busNumber,
       seat_number: seatNumber,
+      payment_method: paymentMethod,
     });
 
     // Decrease the available seats for the bus
     await Bus.update(
-      { seat_available: seatAvailable - 1 },
+      { seat_available: seatAvailable },
       { where: { bus_number: busNumber } }
     );
 
@@ -65,10 +67,11 @@ const checkoutController = async (req, res) => {
       bookingId: newBooking.booking_id,
     });
   } catch (error) {
-    console.error("Error during payment and booking:", error);
-    return res
-      .status(500)
-      .json({ message: "Error processing payment and booking" });
+    console.error("Error during payment and booking:", error); // سجّل الخطأ
+    return res.status(500).json({
+      message: "Error processing payment and booking",
+      error: error.message,
+    });
   }
 };
 

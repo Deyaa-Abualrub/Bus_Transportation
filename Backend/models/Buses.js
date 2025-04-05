@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Route = require("./Route");
 const Driver = require("./Driver");
+const Booking = require("./Booking");
 
 const Bus = sequelize.define(
   "Buses",
@@ -90,5 +91,10 @@ Bus.beforeUpdate((bus, options) => {
     bus.status_change_time = new Date(new Date().getTime() + 30 * 60000); // Adding 30 minutes
   }
 });
+
+// Bus.hasMany(Booking, {
+//   foreignKey: "bus_number", // العمود في جدول Booking
+//   sourceKey: "bus_number", // العمود في جدول Bus الذي نربطه به
+// });
 
 module.exports = Bus;
