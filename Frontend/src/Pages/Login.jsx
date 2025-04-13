@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/checkoutSlice";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google"; // استيراد GoogleOAuthProvider
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false); // حالة التسجيل أو الدخول
@@ -33,10 +33,10 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const newFormData = { ...prev, [name]: value };
-      return newFormData;
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleLogin = async (e) => {
@@ -55,10 +55,9 @@ const Login = () => {
       const { token, user } = res.data;
       localStorage.setItem("authtoken", token);
       localStorage.setItem("user", user.full_name);
-      localStorage.setItem("user_id", user.user_id); // تخزين الـ user_id هنا
+      localStorage.setItem("user_id", user.user_id);
 
-      setLoading(false);
-      dispatch(setUser({ username: user.full_name, user_id: user.user_id })); // تحديث الـ Redux store
+      dispatch(setUser({ username: user.full_name, user_id: user.user_id }));
 
       Swal.fire({
         title: "Welcome back!",
@@ -67,10 +66,14 @@ const Login = () => {
         confirmButtonColor: "#1f2937",
       });
 
-      navigate("/");
       localStorage.setItem("isAuthenticated", true);
+
+      if (user.role === "admin") {
+        navigate("/dashboard"); // إذا كان الدور admin، انتقل إلى صفحة لوحة التحكم
+      } else {
+        navigate("/"); // إذا كان الدور user، انتقل إلى الصفحة الرئيسية
+      }
     } catch (error) {
-      setLoading(false);
       Swal.fire({
         title: "Error occurred",
         text: error.response?.data?.message || "Login failed",
@@ -78,6 +81,7 @@ const Login = () => {
         confirmButtonColor: "#eb2323",
       });
     }
+    setLoading(false);
   };
 
   const handleRegister = async (e) => {
@@ -87,18 +91,15 @@ const Login = () => {
       const res = await axios.post(
         "http://localhost:4000/auth/signup",
         formData,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
 
       const { token, user } = res.data;
       localStorage.setItem("authtoken", token);
       localStorage.setItem("user", user.full_name);
-      localStorage.setItem("user_id", user.user_id); // تخزين الـ user_id هنا
+      localStorage.setItem("user_id", user.user_id);
 
-      setLoading(false);
-      dispatch(setUser({ username: user.full_name, user_id: user.user_id })); // تحديث الـ Redux store
+      dispatch(setUser({ username: user.full_name, user_id: user.user_id }));
 
       Swal.fire({
         title: "Welcome to the app!",
@@ -107,10 +108,16 @@ const Login = () => {
         confirmButtonColor: "#1f2937",
       });
 
-      navigate("/");
       localStorage.setItem("isAuthenticated", true);
+
+      console.log(user.role);
+
+      if (user.role === "admin") {
+        navigate("/dashboard"); // إذا كان الدور admin، انتقل إلى صفحة لوحة التحكم
+      } else {
+        navigate("/"); // إذا كان الدور user، انتقل إلى الصفحة الرئيسية
+      }
     } catch (error) {
-      setLoading(false);
       Swal.fire({
         title: "Error occurred",
         text: error.response?.data?.message || "Registration failed",
@@ -118,6 +125,7 @@ const Login = () => {
         confirmButtonColor: "#eb2323",
       });
     }
+    setLoading(false);
   };
 
   return (
@@ -160,8 +168,15 @@ const Login = () => {
               </div>
 
               <GoogleLogin
-                onSuccess={handleLogin}
-                onError={() => Swal.error("Google login failed")}
+                onSuccess={handleLogin} // يمكنك تعديل هذا بناءً على احتياجك
+                onError={() =>
+                  Swal.fire({
+                    title: "Error",
+                    text: "Google login failed",
+                    icon: "error",
+                    confirmButtonColor: "#eb2323",
+                  })
+                }
                 useOneTap
                 render={(renderProps) => (
                   <button

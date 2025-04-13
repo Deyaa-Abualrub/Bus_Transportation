@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
-const Profile = ({ isOpen, onClose }) => {
+const Profile = ({ isOpen, onClose, onUpdateName }) => {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     full_name: "",
@@ -9,10 +10,10 @@ const Profile = ({ isOpen, onClose }) => {
     password: "",
   });
 
-  // Get the user_id from localStorage
+  // الحصول على user_id من localStorage
   const userId = localStorage.getItem("user_id");
 
-  // Fetch user data when the modal is opened
+  // جلب بيانات المستخدم عند فتح المودال
   useEffect(() => {
     if (isOpen && userId) {
       axios
@@ -27,11 +28,16 @@ const Profile = ({ isOpen, onClose }) => {
         })
         .catch((error) => {
           console.error(error);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Error fetching user profile",
+          });
         });
     }
   }, [isOpen, userId]);
 
-  // Handle input change
+  // دالة التغيير في المدخلات
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -39,35 +45,51 @@ const Profile = ({ isOpen, onClose }) => {
     });
   };
 
-  // Handle form submission
+  // دالة إرسال التحديث
   const handleSubmit = (e) => {
     e.preventDefault();
 
     axios
       .put(`http://localhost:4000/auth/profile/${userId}`, formData)
       .then((response) => {
-        alert(response.data.message);
-        setUser(response.data.user); // Update user data in UI
+        // استخدام SweetAlert لعرض الرسالة بنجاح
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: response.data.message,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        setUser(response.data.user); // تحديث بيانات المستخدم في الواجهة
+        // تحديث الاسم في localStorage
+        localStorage.setItem("user", response.data.user.full_name);
+        // استدعاء الدالة الممررة لتحديث الاسم في Navbar
+        if (typeof onUpdateName === "function") {
+          onUpdateName(response.data.user.full_name);
+        }
       })
       .catch((error) => {
-        alert("Error updating profile");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Error updating profile",
+        });
       });
   };
 
-  if (!isOpen) return null; // Don't display if modal is closed
+  if (!isOpen) return null; // عدم العرض إذا كان المودال مغلق
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop with enhanced blur effect */}
+      {/* خلفية مع تأثير blur */}
       <div
-        className="fixed inset-0  backdrop-blur-md"
+        className="fixed inset-0 backdrop-blur-md"
         onClick={onClose}
-        style={ {backgroundColor: "#000000", opacity: 0.7 }}
+        style={{ backgroundColor: "#000000", opacity: 0.7 }}
       />
-
-      {/* Modal with improved styling */}
+      {/* المودال */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-2xl z-50 max-w-md w-full transform transition-all duration-300">
-        {/* Header with accent color */}
+        {/* رأس المودال */}
         <div
           className="flex justify-between items-center p-4"
           style={{ background: "var(--primary-color, #1f2937)" }}
@@ -94,7 +116,7 @@ const Profile = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* User Profile Content */}
+        {/* محتوى الملف الشخصي */}
         {!user ? (
           <div className="flex justify-center items-center p-12">
             <div
@@ -108,7 +130,7 @@ const Profile = ({ isOpen, onClose }) => {
               className="text-center py-6 relative"
               style={{ background: "var(--third-color, #e8dbb1c8)" }}
             >
-              {/* Decorative elements */}
+              {/* عناصر زخرفية */}
               <div className="absolute top-0 left-0 w-full h-full opacity-20">
                 <div
                   className="absolute top-6 left-6 w-12 h-12 rounded-full"
@@ -120,7 +142,7 @@ const Profile = ({ isOpen, onClose }) => {
                 ></div>
               </div>
 
-              {/* Profile picture with improved styling */}
+              {/* صورة الملف الشخصي */}
               <div className="relative inline-block">
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg relative z-10 transition-transform duration-300 hover:scale-105">
                   <img
@@ -158,18 +180,16 @@ const Profile = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* User name with better typography */}
+              {/* عرض اسم المستخدم */}
               <h2
                 className="mt-4 text-2xl font-bold relative z-10"
-                style={{
-                  color: "var(--primary-color, #1f2937)",
-                }}
+                style={{ color: "var(--primary-color, #1f2937)" }}
               >
                 {user.full_name}
               </h2>
             </div>
 
-            {/* Form with improved styling */}
+            {/* نموذج التحديث */}
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div className="relative">
                 <label
@@ -190,7 +210,6 @@ const Profile = ({ isOpen, onClose }) => {
                     border: "2px solid #e2e8f0",
                     backgroundColor: "#f8fafc",
                     color: "var(--primary-color, #1f2937)",
-                    focusRing: "var(--secondary-color, #fb2c36)",
                   }}
                 />
               </div>
@@ -214,7 +233,6 @@ const Profile = ({ isOpen, onClose }) => {
                     border: "2px solid #e2e8f0",
                     backgroundColor: "#f8fafc",
                     color: "var(--primary-color, #1f2937)",
-                    focusRing: "var(--secondary-color, #fb2c36)",
                   }}
                 />
               </div>
@@ -238,7 +256,6 @@ const Profile = ({ isOpen, onClose }) => {
                     border: "2px solid #e2e8f0",
                     backgroundColor: "#f8fafc",
                     color: "var(--primary-color, #1f2937)",
-                    focusRing: "var(--secondary-color, #fb2c36)",
                   }}
                 />
                 <div className="absolute right-4 top-10 text-gray-400 cursor-pointer">

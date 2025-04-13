@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useNavigate , Link } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const DriverLogin = () => {
   const {
@@ -10,34 +12,48 @@ const DriverLogin = () => {
   } = useForm();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     setLoading(true);
     setMessage("");
 
     try {
-      const response = await fetch("/api/drivers/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        "http://localhost:4000/bus/auth/driver/signin",
+        {
           email: data.email,
           password: data.password,
-        }),
-      });
+        },
+        {
+          withCredentials: true, // لتمكين ارسال الكوكيز مع الطلب
+        }
+      );
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage("Sign in successful!");
-        // Redirect or handle successful login here
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Sign In Successful!",
+          text: "You have successfully signed in.",
+          icon: "success",
+          confirmButtonText: "Continue",
+          confirmButtonColor: "var(--secondary-color)",
+        }).then(() => {
+          // Redirect to home or dashboard
+          navigate("/");
+        });
       } else {
-        setMessage(`Error: ${result.message || "Invalid credentials"}`);
+        setMessage(`Error: ${response.data.message || "Invalid credentials"}`);
       }
     } catch (error) {
       setMessage("Error connecting to server");
       console.error("Error submitting form:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Something went wrong. Please try again later.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        confirmButtonColor: "var(--secondary-color)",
+      });
     } finally {
       setLoading(false);
     }

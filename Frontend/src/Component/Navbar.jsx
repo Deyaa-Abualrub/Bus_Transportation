@@ -13,7 +13,8 @@ import { FaUserCircle } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Profile from "../Pages/Profile"; // We'll create this component
+import Profile from "../Pages/Profile";
+import Swal from "sweetalert2";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -23,9 +24,8 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState("");
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // State for profile modal
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // قراءة بيانات المستخدم من localStorage
   useEffect(() => {
     const authStatus = localStorage.getItem("isAuthenticated");
     const storedUserName = localStorage.getItem("user");
@@ -54,14 +54,57 @@ export default function Navbar() {
     }
   };
 
-  // Function to open profile modal
+  // دوال فتح وإغلاق المودال
   const openProfileModal = () => {
     setIsProfileOpen(true);
   };
 
-  // Function to close profile modal
   const closeProfileModal = () => {
     setIsProfileOpen(false);
+  };
+
+  // دالة لتحديث اسم المستخدم في Navbar
+  const updateUserName = (newName) => {
+    setUserName(newName);
+  };
+
+  // دالة لعرض اختيار الدور عند الضغط على زر Login
+  const handleLoginClick = () => {
+    Swal.fire({
+      title: "Select Role",
+      text: "Are you a user or a driver?",
+      icon: "question",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "User",
+      denyButtonText: "Driver",
+    }).then((result) => {
+      console.log(result);
+      if (result.isConfirmed) {
+        navigate("/signin");
+      } else if (result.isDenied) {
+        navigate("/driver-login");
+      }
+    });
+  };
+
+  // دالة لعرض اختيار الدور عند الضغط على زر Register
+  const handleRegisterClick = () => {
+    Swal.fire({
+      title: "Select Role",
+      text: "Are you a user or a driver?",
+      icon: "question",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "User",
+      denyButtonText: "Driver",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/signin");
+      } else if (result.isDenied) {
+        navigate("/driver-login");
+      }
+    });
   };
 
   return (
@@ -70,7 +113,6 @@ export default function Navbar() {
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              {/* Mobile menu button */}
               <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset">
                 <span className="absolute -inset-0.5" />
                 <span className="sr-only">Open main menu</span>
@@ -90,7 +132,6 @@ export default function Navbar() {
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4 justify-center">
-                  {/* Add navigation links */}
                   {[
                     { name: "Home", path: "/" },
                     { name: "About Us", path: "/about" },
@@ -113,27 +154,23 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              {/* Add buttons only if the user is not logged in */}
               {!isAuthenticated && (
                 <>
                   <button
-                    onClick={() => navigate("/signin")}
+                    onClick={handleLoginClick}
                     className="text-white m-1 px-4 py-2 bg-[#eb2323] rounded-md hover:bg-red-700"
                   >
                     Login
                   </button>
                   <button
-                    onClick={() => navigate("/signin")}
+                    onClick={handleRegisterClick}
                     className="ml-2 text-white px-4 py-2 bg-[#eb2323] rounded-md hover:bg-red-700"
                   >
                     Register
                   </button>
                 </>
               )}
-
-              {/* If the user is authenticated */}
               {isAuthenticated && (
                 <>
                   <Menu as="div" className="relative ml-3">
@@ -180,8 +217,6 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
-        {/* Mobile view */}
         <DisclosurePanel className="sm:hidden">
           <div className="space-y-1 px-2 pt-2 pb-3">
             {[
@@ -207,10 +242,13 @@ export default function Navbar() {
           </div>
         </DisclosurePanel>
       </Disclosure>
-
-      {/* Profile Modal */}
+      {/* تمرير دالة updateUserName لمكون Profile */}
       {isProfileOpen && (
-        <Profile isOpen={isProfileOpen} onClose={closeProfileModal} />
+        <Profile
+          isOpen={isProfileOpen}
+          onClose={closeProfileModal}
+          onUpdateName={updateUserName}
+        />
       )}
     </>
   );

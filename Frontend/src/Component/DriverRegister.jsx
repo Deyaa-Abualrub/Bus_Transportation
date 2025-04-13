@@ -37,7 +37,7 @@ const DriverRegistr = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:4000/bus/driver/register",
+        "http://localhost:4000/bus/auth/driver/register",
         formData,
         {
           headers: {
@@ -56,7 +56,7 @@ const DriverRegistr = () => {
           confirmButtonColor: "var(--secondary-color)",
         }).then(() => {
           // Redirect to home page
-          navigate("/home");
+          navigate("/");
         });
       } else {
         setMessage(`Error: ${response.data.message || "Something went wrong"}`);

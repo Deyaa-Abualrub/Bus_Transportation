@@ -12,6 +12,7 @@ const checkout = require("./routes/checkoutRoutes");
 const passport = require("passport");
 const session = require("express-session");
 const driverRoutes = require("./routes/driverRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 dotenv.config();
 
@@ -30,7 +31,6 @@ app.use(
   })
 );
 
-// إعداد Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -43,15 +43,15 @@ app.use(
   })
 );
 
-// app.use("/bus", userRoutes);
 app.use("/bus", contactMessage);
 app.use("/bus", searchBus);
 app.use("/bus", checkout);
-app.use("/bus/driver", driverRoutes);
+app.use("/bus/auth/driver", driverRoutes);
 app.use("/auth", userRoutes);
 app.use("/auth", googleRoutes);
+app.use("/dashboard", dashboardRoutes);
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/Uploads", express.static(path.join(__dirname, "Uploads")));
 
 const PORT = 4000;
 app.listen(PORT, () => {

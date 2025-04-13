@@ -3,7 +3,6 @@ const User = require("../models/User");
 const sequelize = require("../config/database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const passport = require("passport");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -38,23 +37,20 @@ const signup = async (req, res) => {
 
     const { full_name, email, password } = req.body;
 
-    // تحقق إذا كان البريد الإلكتروني مسجلاً مسبقاً
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "Email is already registered" });
     }
 
-    // تشفير كلمة المرور
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // إنشاء مستخدم جديد في قاعدة البيانات
     const newUser = await User.create({
       full_name,
       email,
       password: hashedPassword,
+      role: "user", // تأكد من تعيين دور المستخدم هنا إذا لم يكن موجودًا في الـ Request
     });
 
-    // إنشاء JWT
     const token = jwt.sign(
       { userId: newUser.user_id, email: newUser.email },
       JWT_SECRET,
@@ -73,6 +69,7 @@ const signup = async (req, res) => {
         user_id: newUser.user_id, // إرجاع الـ user_id هنا
         full_name: newUser.full_name,
         email: newUser.email,
+        role: newUser.role, // إرجاع الـ role مع بيانات المستخدم
       },
     });
   } catch (error) {
@@ -84,12 +81,9 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   try {
-    const { error } = signinSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
-
     const { email, password } = req.body;
+
+    console.log("Signin attempt with email:", email);
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
@@ -118,11 +112,13 @@ const signin = async (req, res) => {
       message: "Login successful",
       token,
       user: {
-        user_id: user.user_id, // إرجاع الـ user_id هنا
+        user_id: user.user_id,
         full_name: user.full_name,
+        role: user.role,
       },
     });
   } catch (error) {
+    console.error("Error during signin:", error);
     return res
       .status(500)
       .json({ message: "Login failed", error: error.message });
