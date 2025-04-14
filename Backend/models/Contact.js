@@ -27,8 +27,10 @@ const ContactMessage = sequelize.define(
     },
   },
   {
-    tableName: "contactmessage", // The name of the table in your database
-    timestamps: false, // Set to false as we are manually handling the created_at field
+    tableName: "contactmessage",
+    timestamps: true, 
+    createdAt: "created_at", 
+    updatedAt: "updated_at", 
   }
 );
 

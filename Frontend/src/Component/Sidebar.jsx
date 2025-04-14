@@ -27,6 +27,34 @@ const Sidebar = () => {
             Home
           </Link>
         </li>
+
+        <li className="mb-2">
+          <Link
+            to="/users"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <UserCheck className="mr-2" size={18} />
+            Users
+          </Link>
+        </li>
+        <li className="mb-2">
+          <Link
+            to="/driver-requests"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <UserCheck className="mr-2" size={18} />
+            Buses
+          </Link>
+        </li>
+        <li className="mb-2">
+          <Link
+            to="/driver-requests"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <UserCheck className="mr-2" size={18} />
+            Drivers
+          </Link>
+        </li>
         <li className="mb-2">
           <Link
             to="/driver-requests"

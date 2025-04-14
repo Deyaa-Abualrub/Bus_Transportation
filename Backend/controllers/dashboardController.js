@@ -36,7 +36,9 @@ const getDriverRequests = async (req, res) => {
 
 const getContactMessages = async (req, res) => {
   try {
+    console.log("Trying to fetch contact messages...");
     const messages = await ContactMessage.findAll();
+    console.log("Fetched contact messages:", messages);
     res.status(200).json(messages);
   } catch (error) {
     console.error("Error fetching contact messages:", error);
@@ -50,6 +52,22 @@ const transporter = nodemailer.createTransport({
     pass: process.env.PASSWORD_NODEMAILER,
   },
 });
+
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        isdeleted: false,
+      },
+      attributes: ["user_id", "full_name", "email", "role", "created_at"],
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
 
 const replyToMessage = async (req, res) => {
   const { email, replyMessage } = req.body;
@@ -77,6 +95,7 @@ const replyToMessage = async (req, res) => {
 };
 
 module.exports = {
+  getUsers,
   getDashboardStats,
   getDriverRequests,
   getContactMessages,

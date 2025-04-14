@@ -13,6 +13,8 @@ const checkoutController = async (req, res) => {
       seatNumber,
     } = req.body;
 
+    const total_price = price;
+
     console.log("Received payment data:", req.body);
 
     if (
@@ -54,6 +56,7 @@ const checkoutController = async (req, res) => {
       bus_number: busNumber,
       seat_number: seatNumber,
       payment_method: paymentMethod,
+      total_price: total_price,
     });
 
     // Decrease the available seats for the bus

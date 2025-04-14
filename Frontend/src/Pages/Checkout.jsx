@@ -199,21 +199,19 @@ const Checkout = () => {
                 }`}
               >
                 <i className="fa-solid fa-money-bill-wave  w-8 mr-1 align-middle"></i>{" "}
-                {/* إضافة مسافة بين الأيقونة والكلمة */}
                 Cash
               </button>
 
               <button
-                onClick={() => setPaymentMethod("visa")}
+                onClick={() => setPaymentMethod("paypal")}
                 className={`p-4 rounded-lg border text-center transition-all flex items-center justify-center ${
-                  paymentMethod === "visa"
+                  paymentMethod === "paypal"
                     ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
                     : "bg-white text-[var(--text-color)] border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                <i className="fa-brands fa-cc-visa w-8 mr-1 align-middle"></i>{" "}
-                {/* إضافة مسافة بين الأيقونة والكلمة */}
-                Visa Card
+                <i className="fa-brands fa-cc-paypal w-8 mr-1 align-middle"></i>
+                PayPal
               </button>
 
               <button

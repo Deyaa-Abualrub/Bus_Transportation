@@ -36,14 +36,16 @@ const User = sequelize.define(
       defaultValue: false,
     },
     google_id: {
-      type: DataTypes.STRING, // تغيير الـ google_id إلى BIGINT
+      type: DataTypes.STRING,
       allowNull: true,
       unique: true,
     },
   },
   {
     tableName: "User",
-    timestamps: false,
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 

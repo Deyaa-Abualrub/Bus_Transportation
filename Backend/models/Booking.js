@@ -43,10 +43,16 @@ const Booking = sequelize.define(
       allowNull: false,
       defaultValue: "pending", // Default value as 'pending'
     },
+    total_price: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
   },
   {
     tableName: "bookings",
-    timestamps: false,
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 

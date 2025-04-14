@@ -48,16 +48,18 @@ const Driver = sequelize.define(
     },
     status: {
       type: DataTypes.STRING(50),
-      allowNull: false, // هذا يجعل الحقل لا يقبل قيمة null
-      defaultValue: "pending", // تعيين القيمة الافتراضية لـ status إلى "pending"
+      allowNull: false, 
+      defaultValue: "pending",
       validate: {
-        isIn: [["pending", "approved", "rejected"]], // التأكد من أن القيم هي واحدة من هذه
+        isIn: [["pending", "approved", "rejected"]],
       },
     },
   },
   {
     tableName: "driver",
-    timestamps: false,
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
   }
 );
 
