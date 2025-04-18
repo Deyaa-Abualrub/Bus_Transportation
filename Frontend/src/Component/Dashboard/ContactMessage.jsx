@@ -4,6 +4,7 @@ import Sidebar from "../Sidebar";
 import { MessageSquare, Search, Mail, AlertCircle } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Pagination from "./Pagination";
 
 const ContactMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -11,24 +12,30 @@ const ContactMessages = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/dashboard/contact-messages"
-        );
+          `http://localhost:4000/dashboard/contact-messages?page=${currentPage}&limit=${itemsPerPage}`
+        ); // Pagination added here
         setMessages(response.data);
+        // Check if there are more messages for the next page
+        setHasNextPage(response.data.length === itemsPerPage);
       } catch (error) {
         console.error("Error fetching contact messages:", error);
       }
     };
 
     fetchMessages();
-  }, []);
+  }, [currentPage]); // Refetch data when the page changes
 
   const handleReply = (message) => {
     setSelectedMessage(message);
-    // Set timeout to allow animation to work
     setTimeout(() => {
       setModalVisible(true);
     }, 10);
@@ -38,7 +45,7 @@ const ContactMessages = () => {
     setModalVisible(false);
     setTimeout(() => {
       setSelectedMessage(null);
-    }, 300); // Wait for animation to complete before removing modal from DOM
+    }, 300);
   };
 
   const submitReply = async () => {
@@ -66,6 +73,19 @@ const ContactMessages = () => {
       message.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       message.message.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Pagination Logic
+  const goToNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <div className="flex h-screen">
@@ -147,6 +167,16 @@ const ContactMessages = () => {
             />
             <p className="text-xl">No messages found</p>
           </div>
+        )}
+
+        {/* Replace the pagination with the new component */}
+        {(hasNextPage || currentPage > 1) && (
+          <Pagination
+            currentPage={currentPage}
+            hasNextPage={hasNextPage}
+            goToPreviousPage={goToPreviousPage}
+            goToNextPage={goToNextPage}
+          />
         )}
 
         {/* Reply Modal with overlay, zoom effect, and higher z-index */}

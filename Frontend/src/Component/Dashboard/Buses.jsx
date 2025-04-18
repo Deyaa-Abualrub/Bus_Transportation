@@ -2,27 +2,34 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Bus, Search, Loader, MapPin, Users } from "lucide-react";
 import Sidebar from "../Sidebar";
+import Pagination from "./Pagination";
 
 const BusesPage = () => {
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:4000/dashboard/buses")
+      .get(
+        `http://localhost:4000/dashboard/buses?page=${currentPage}&limit=${itemsPerPage}`
+      )
       .then((res) => {
         setBuses(res.data);
         setFilteredBuses(res.data);
+        setHasNextPage(res.data.length === itemsPerPage);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching buses:", error);
         setLoading(false);
       });
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     const results = buses.filter(
@@ -33,6 +40,14 @@ const BusesPage = () => {
     setFilteredBuses(results);
   }, [searchTerm, buses]);
 
+  const goToNextPage = () => {
+    if (hasNextPage) setCurrentPage(currentPage + 1);
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -40,7 +55,6 @@ const BusesPage = () => {
         className="flex-1 overflow-auto p-6"
         style={{ backgroundColor: "var(--third-color)" }}
       >
-        {/* Page Header */}
         <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
           <div className="flex items-center mb-4 md:mb-0">
             <Bus
@@ -56,19 +70,14 @@ const BusesPage = () => {
             </h1>
           </div>
 
-          {/* Search Box */}
           <div className="relative w-full md:w-64">
             <input
               type="text"
               placeholder="Search buses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-opacity-50"
-              style={{
-                backgroundColor: "#f9fafb",
-                borderColor: "#e5e7eb",
-                focusRing: "var(--primary-color)",
-              }}
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300"
+              style={{ backgroundColor: "#f9fafb", borderColor: "#e5e7eb" }}
             />
             <Search
               size={18}
@@ -77,7 +86,6 @@ const BusesPage = () => {
           </div>
         </div>
 
-        {/* Loading State */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Loader
@@ -92,7 +100,6 @@ const BusesPage = () => {
           </div>
         ) : (
           <>
-            {/* Bus Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredBuses.map((bus) => (
                 <div
@@ -160,7 +167,6 @@ const BusesPage = () => {
                           {bus.seat_available} available
                         </span>
                       </div>
-
                       <div className="flex items-center text-sm">
                         <MapPin className="mr-2 text-gray-500" size={16} />
                         <span
@@ -198,10 +204,14 @@ const BusesPage = () => {
               ))}
             </div>
 
-            {/* Results Count */}
-            <div className="mt-6 text-sm text-gray-500 text-right">
-              Showing {filteredBuses.length} of {buses.length} buses
-            </div>
+            {(hasNextPage || currentPage > 1) && (
+              <Pagination
+                currentPage={currentPage}
+                hasNextPage={hasNextPage}
+                goToPreviousPage={goToPreviousPage}
+                goToNextPage={goToNextPage}
+              />
+            )}
           </>
         )}
       </div>

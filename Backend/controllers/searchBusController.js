@@ -29,6 +29,7 @@ const searchBus = async (req, res) => {
           "price",
           "seat_available",
           "status_change_time",
+          "bus_image",
         ],
       });
     } else {
@@ -43,6 +44,7 @@ const searchBus = async (req, res) => {
           "price",
           "seat_available",
           "launch_date",
+          "bus_image",
         ],
       });
     }

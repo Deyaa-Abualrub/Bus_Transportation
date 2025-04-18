@@ -12,28 +12,32 @@ import {
   XCircle,
   X,
 } from "lucide-react";
+import Pagination from "./Pagination";
 
 const DriverRequests = () => {
   const [drivers, setDrivers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewImage, setViewImage] = useState({ id: null, type: null });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/dashboard/driver-requests"
+          `http://localhost:4000/dashboard/driver-requests?page=${currentPage}&limit=${itemsPerPage}`
         );
         if (response.data && Array.isArray(response.data)) {
           setDrivers(response.data);
+          setHasNextPage(response.data.length === itemsPerPage);
         }
       } catch (error) {
         console.error("Error fetching driver data:", error);
       }
     };
-
     fetchDrivers();
-  }, []);
+  }, [currentPage]);
 
   const filteredDrivers = (drivers || []).filter(
     (driver) =>
@@ -41,6 +45,14 @@ const DriverRequests = () => {
         driver.full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (driver.phone_number && driver.phone_number.includes(searchTerm))
   );
+
+  const goToNextPage = () => {
+    if (hasNextPage) setCurrentPage((prev) => prev + 1);
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -97,7 +109,7 @@ const DriverRequests = () => {
             <input
               type="text"
               placeholder="Search by name or phone..."
-              className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-10 pr-4 py-2 rounded-lg border border-gray-300"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -180,22 +192,12 @@ const DriverRequests = () => {
                       {driver.status === "pending" && (
                         <div className="flex gap-2">
                           <button
-                            className="py-1 px-3 rounded text-white transition-colors text-sm"
-                            style={{
-                              backgroundColor: "var(--primary-color)",
-                            }}
-                            onClick={() => {
-                              /* Handle approve action */
-                            }}
+                            className="py-1 px-3 rounded text-white text-sm"
+                            style={{ backgroundColor: "var(--primary-color)" }}
                           >
                             Approve
                           </button>
-                          <button
-                            className="py-1 px-3 rounded text-white bg-red-500 hover:bg-red-600 transition-colors text-sm"
-                            onClick={() => {
-                              /* Handle reject action */
-                            }}
-                          >
+                          <button className="py-1 px-3 rounded text-white bg-red-500 hover:bg-red-600 text-sm">
                             Reject
                           </button>
                         </div>
@@ -217,7 +219,16 @@ const DriverRequests = () => {
           </div>
         )}
 
-        {/* Image Modal */}
+        {/* Replace the pagination with the new component */}
+        {(hasNextPage || currentPage > 1) && (
+          <Pagination
+            currentPage={currentPage}
+            hasNextPage={hasNextPage}
+            goToPreviousPage={goToPreviousPage}
+            goToNextPage={goToNextPage}
+          />
+        )}
+
         {viewImage.id && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-4 max-w-2xl w-full">
@@ -235,33 +246,25 @@ const DriverRequests = () => {
                 </button>
               </div>
               <div className="h-96 bg-gray-100 rounded flex items-center justify-center">
-                {viewImage.type === "license" ? (
-                  <img
+                <img
                   src={`http://localhost:4000/${
-                    filteredDrivers.find((d) => d.driver_id === viewImage.id)
-                      ?.license_img
+                    drivers.find((d) => d.driver_id === viewImage.id)?.[
+                      viewImage.type === "license"
+                        ? "license_img"
+                        : "non_conviction_img"
+                    ]
                   }`}
-                    alt="Driver License"
-                    className="max-h-full max-w-full object-contain"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/placeholder.jpg";
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`http://localhost:4000/${
-                      filteredDrivers.find((d) => d.driver_id === viewImage.id)
-                        ?.non_conviction_img
-                    }`}
-                    alt="Non-Conviction Certificate"
-                    className="max-h-full max-w-full object-contain"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/placeholder.jpg";
-                    }}
-                  />
-                )}
+                  alt={
+                    viewImage.type === "license"
+                      ? "Driver License"
+                      : "Non-Conviction Certificate"
+                  }
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/placeholder.jpg";
+                  }}
+                />
               </div>
             </div>
           </div>

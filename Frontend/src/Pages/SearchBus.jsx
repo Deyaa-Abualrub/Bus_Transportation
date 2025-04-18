@@ -205,15 +205,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { setBusDetails } from "../redux/checkoutSlice"; // تأكد من المسار الصحيح للـ slice
-import { useNavigate } from "react-router-dom"; // لتوجيه المستخدم إلى صفحة checkout
+import { setBusDetails } from "../redux/checkoutSlice"; 
+import { useNavigate } from "react-router-dom"; 
 import BookingForm from "../Component/BookingForm";
 
 const SearchBus = () => {
   const [buses, setBuses] = useState([]);
   const { from, to, searchType } = useSelector((state) => state.bookingForm);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // للانتقال إلى صفحة checkout
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchBuses = async () => {
