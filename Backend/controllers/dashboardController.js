@@ -94,10 +94,44 @@ const replyToMessage = async (req, res) => {
   }
 };
 
+const getAllDrivers = async (req, res) => {
+  try {
+    const drivers = await Driver.findAll({
+      where: { isdeleted: false },
+      attributes: ["driver_id", "full_name", "email", "phone_number"],
+    });
+    res.status(200).json(drivers);
+  } catch (error) {
+    console.error("Error fetching drivers:", error);
+    res.status(500).json({ message: "Error fetching drivers" });
+  }
+};
+
+const getAllBuses = async (req, res) => {
+  try {
+    const buses = await Bus.findAll({
+      attributes: [
+        "bus_id",
+        "bus_number",
+        "seat_available",
+        "bus_image",
+        "bus_route",
+      ],
+    });
+    res.status(200).json(buses);
+  } catch (error) {
+    console.error("Error fetching buses:", error);
+    res.status(500).json({ message: "Error fetching buses" });
+  }
+};
+
+// Export them
 module.exports = {
   getUsers,
   getDashboardStats,
   getDriverRequests,
   getContactMessages,
   replyToMessage,
+  getAllDrivers,
+  getAllBuses,
 };

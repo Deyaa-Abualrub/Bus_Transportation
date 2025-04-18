@@ -5,6 +5,8 @@ import {
   MessageSquare,
   LogOut,
   BarChart2,
+  Users,
+  Bus,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -30,33 +32,6 @@ const Sidebar = () => {
 
         <li className="mb-2">
           <Link
-            to="/users"
-            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
-          >
-            <UserCheck className="mr-2" size={18} />
-            Users
-          </Link>
-        </li>
-        <li className="mb-2">
-          <Link
-            to="/driver-requests"
-            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
-          >
-            <UserCheck className="mr-2" size={18} />
-            Buses
-          </Link>
-        </li>
-        <li className="mb-2">
-          <Link
-            to="/driver-requests"
-            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
-          >
-            <UserCheck className="mr-2" size={18} />
-            Drivers
-          </Link>
-        </li>
-        <li className="mb-2">
-          <Link
             to="/driver-requests"
             className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
           >
@@ -73,6 +48,34 @@ const Sidebar = () => {
             Contact Messages
           </Link>
         </li>
+        <li className="mb-2">
+          <Link
+            to="/users"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <Users className="mr-2" size={18} />
+            Users
+          </Link>
+        </li>
+        <li className="mb-2">
+          <Link
+            to="/drivers"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <UserCheck className="mr-2" size={18} />
+            Drivers
+          </Link>
+        </li>
+        <li className="mb-2">
+          <Link
+            to="/buses"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <Bus className="mr-2" size={18} />
+            Buses
+          </Link>
+        </li>
+
         <li className="mt-6 pt-6 border-t border-gray-700">
           <Link
             to="/signin"

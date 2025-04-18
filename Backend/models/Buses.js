@@ -45,7 +45,7 @@ const Bus = sequelize.define(
       allowNull: true,
     },
     launch_date: {
-      type: DataTypes.DATE, // Stores both date and time
+      type: DataTypes.DATE, 
       allowNull: true,
     },
     price: {

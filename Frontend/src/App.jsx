@@ -13,6 +13,9 @@ import Profile from "./Pages/Profile";
 import Dashboard from "./Component/Dashboard/Dashboard";
 import DriverRequests from "./Component/Dashboard/DriverRequest";
 import ContactMessages from "./Component/Dashboard/ContactMessage";
+import UsersPage from "./Component/Dashboard/Users";
+import DriversPage from "./Component/Dashboard/Drivers";
+import BusesPage from "./Component/Dashboard/Buses";
 
 function App() {
   const location = useLocation();
@@ -20,7 +23,10 @@ function App() {
     location.pathname === "/signin" ||
     location.pathname === "/dashboard" ||
     location.pathname === "/driver-requests" ||
-    location.pathname === "/contact-messages";
+    location.pathname === "/contact-messages" ||
+    location.pathname === "/users" ||
+    location.pathname === "/drivers" ||
+    location.pathname === "/buses";
 
   return (
     <>
@@ -38,6 +44,9 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/driver-requests" element={<DriverRequests />} />
         <Route path="/contact-messages" element={<ContactMessages />} />
+        <Route path="/users" element={<UsersPage />} />
+        <Route path="/drivers" element={<DriversPage />} />
+        <Route path="/buses" element={<BusesPage />} />
       </Routes>
       {!hideNavAndFooter && <Footer />}
     </>
