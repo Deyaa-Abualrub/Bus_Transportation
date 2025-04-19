@@ -34,13 +34,13 @@ const Booking = sequelize.define(
       allowNull: false,
     },
     payment_method: {
-      type: DataTypes.ENUM("credit_card", "paypal", "cash"),
+      type: DataTypes.ENUM("cash", "paypal", "credit", "visa"),
       allowNull: false,
     },
     payment_status: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: "pending", 
+      defaultValue: "pending",
     },
     total_price: {
       type: DataTypes.FLOAT,

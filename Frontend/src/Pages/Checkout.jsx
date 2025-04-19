@@ -61,73 +61,68 @@ const Checkout = () => {
       });
     }
   };
-
+    
   useEffect(() => {
     if (paymentMethod === "paypal" && window.paypal) {
-    
       const container = document.getElementById("paypal-button-container");
       if (container) container.innerHTML = "";
-
-      window.paypal
-        .Buttons({
-          createOrder: (data, actions) => {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    value: totalPrice.toString(),
-                    currency_code: "USD",
-                  },
+  
+      window.paypal.Buttons({
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [
+              {
+                amount: {
+                  value: totalPrice.toString(),
+                  currency_code: "USD",
                 },
-              ],
+              },
+            ],
+          });
+        },
+        onApprove: async (data, actions) => {
+          const details = await actions.order.capture();
+  
+          try {
+            const response = await axios.post("http://localhost:4000/bus/paypaypal", {
+              busRoute: bus.busRoute,
+              busNumber: bus.busNumber,
+              price: totalPrice,
+              seatAvailable: bus.seatAvailable - seatCount,
+              paymentMethod: "paypal",
+              userId: user.user_id,
+              seatNumber: seatCount,
+              paypalOrderId: data.orderID,
             });
-          },
-          onApprove: async (data, actions) => {
-            const details = await actions.order.capture();
-
-            try {
-              const response = await axios.post(
-                "http://localhost:4000/bus/paypaypal",
-                {
-                  busRoute: bus.busRoute,
-                  busNumber: bus.busNumber,
-                  price: totalPrice,
-                  seatAvailable: bus.seatAvailable - seatCount,
-                  paymentMethod: "paypal",
-                  userId: user.user_id,
-                  seatNumber: seatCount,
-                  paypalOrderId: data.orderID,
-                }
-              );
-
-              Swal.fire({
-                title: "Payment Successful!",
-                text: response.data.message,
-                icon: "success",
-                confirmButtonColor: "#1f2937",
-              });
-
-              navigate("/");
-            } catch (error) {
-              Swal.fire({
-                title: "Booking Failed",
-                text: "Payment succeeded, but booking failed.",
-                icon: "error",
-              });
-            }
-          },
-          onError: (err) => {
-            console.error("PayPal Error:", err);
+  
             Swal.fire({
-              title: "PayPal Error",
-              text: "There was an issue with PayPal payment.",
+              title: "Payment Successful!",
+              text: response.data.message,
+              icon: "success",
+              confirmButtonColor: "#1f2937",
+            });
+  
+            navigate("/");
+          } catch (error) {
+            Swal.fire({
+              title: "Booking Failed",
+              text: "Payment succeeded, but booking failed.",
               icon: "error",
             });
-          },
-        })
-        .render("#paypal-button-container");
+          }
+        },
+        onError: (err) => {
+          console.error("PayPal Error:", err);
+          Swal.fire({
+            title: "PayPal Error",
+            text: "There was an issue with PayPal payment.",
+            icon: "error",
+          });
+        },
+      }).render("#paypal-button-container");
     }
   }, [paymentMethod, totalPrice, seatCount]);
+  
 
   return (
     <div className="bg-[#c2545400] min-h-screen py-12 px-4 sm:px-6 lg:px-8">

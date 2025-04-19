@@ -19,6 +19,9 @@
     "@stripe/stripe-js": "^7.0.0",
     "@tailwindcss/vite": "^4.0.6",
     "axios": "^1.8.3",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "framer-motion": "^12.4.10",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.483.0",
@@ -33,6 +36,7 @@
     "react-router-dom": "^7.3.0",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.2",
+    "stripe": "^18.0.0",
     "sweetalert2": "^11.17.2",
     "tailwindcss": "^4.0.6"
   },

@@ -1,5 +1,9 @@
+// في هذا التعديل، نضيف حفظ العملية في قاعدة البيانات مباشرة بعد الدفع عبر Stripe
+// بملف stripeController، سنستخدم بيانات metadata لحفظ العملية
+
 const Booking = require("../models/Booking");
 const Bus = require("../models/Buses");
+const stripe = require("stripe")(process.env.SECRET_STRIPE);
 
 const checkoutController = async (req, res) => {
   try {
@@ -14,8 +18,6 @@ const checkoutController = async (req, res) => {
     } = req.body;
 
     const total_price = price;
-
-    console.log("Received payment data:", req.body);
 
     if (
       !busRoute ||
@@ -40,27 +42,20 @@ const checkoutController = async (req, res) => {
 
     switch (paymentMethod) {
       case "cash":
-        console.log("Processing payment with Cash");
         paymentMessage = "Payment successful with Cash";
         break;
-
       case "credit":
-        console.log("Processing payment with Credit Card");
         paymentMessage = "Payment successful with Credit Card";
         payment_status = "done";
         break;
-
       case "paypal":
-        console.log("Payment confirmed via PayPal frontend");
         paymentMessage = "Payment successful with PayPal";
         payment_status = "done";
         break;
-
       default:
         return res.status(400).json({ message: "Invalid payment method" });
     }
 
-    // Save booking to database
     const newBooking = await Booking.create({
       user_id: userId,
       bus_number: busNumber,
@@ -70,7 +65,6 @@ const checkoutController = async (req, res) => {
       payment_status: payment_status,
     });
 
-    // Update bus seat availability
     await Bus.update(
       { seat_available: seatAvailable },
       { where: { bus_number: busNumber } }
@@ -81,7 +75,6 @@ const checkoutController = async (req, res) => {
       bookingId: newBooking.booking_id,
     });
   } catch (error) {
-    console.error("Error during payment and booking:", error);
     return res.status(500).json({
       message: "Error processing payment and booking",
       error: error.message,
@@ -89,4 +82,49 @@ const checkoutController = async (req, res) => {
   }
 };
 
-module.exports = checkoutController;
+const stripeController = async (req, res) => {
+  try {
+    const { busRoute, busNumber, price, seatAvailable, userId, seatNumber } = req.body;
+
+    // Save booking first (payment is considered done)
+    await Booking.create({
+      user_id: userId,
+      bus_number: busNumber,
+      seat_number: seatNumber,
+      payment_method: "credit",
+      total_price: price,
+      payment_status: "done",
+    });
+
+    await Bus.update(
+      { seat_available: seatAvailable },
+      { where: { bus_number: busNumber } }
+    );
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Bus ${busNumber} - ${busRoute}`,
+            },
+            unit_amount: Math.round(price * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: "http://localhost:5173/?payment=success",
+      cancel_url: "http://localhost:5173/checkout?payment=cancel",
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error("Stripe error:", err);
+    res.status(500).json({ message: "Stripe session creation failed" });
+  }
+};
+
+module.exports = { checkoutController, stripeController };
