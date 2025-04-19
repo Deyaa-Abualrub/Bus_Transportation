@@ -23,7 +23,6 @@ const Booking = sequelize.define(
     bus_number: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
       // references: {
       //   model: Bus,
       //   key: "bus_number", // تأكد من أن الباص نيم يتناسب مع الجدول
@@ -41,7 +40,7 @@ const Booking = sequelize.define(
     payment_status: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: "pending", // Default value as 'pending'
+      defaultValue: "pending", 
     },
     total_price: {
       type: DataTypes.FLOAT,
