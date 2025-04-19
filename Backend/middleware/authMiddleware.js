@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const authenticateUser = (req, res, next) => {
   let token =
-    req.cookies.authtoken || // تغيير "token" إلى "authtoken"
+    req.cookies.authtoken ||
     (req.headers.authorization
       ? req.headers.authorization.split(" ")[1]
       : null);
@@ -18,13 +18,12 @@ const authenticateUser = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded Token:", decoded); // Log the decoded token
+    console.log("Decoded Token:", decoded);
     req.user = decoded;
 
-    // إرسال حالة المستخدم في الرد
     return res.status(200).json({
       message: "User authenticated",
-      user: decoded, // تضمين معلومات المستخدم في الرد
+      user: decoded,
     });
   } catch (error) {
     console.error("JWT Verification Error:", error.message);
@@ -33,7 +32,7 @@ const authenticateUser = (req, res, next) => {
 };
 
 const authenticateAdmin = (req, res, next) => {
-  const token = req.cookies.authtoken; // تغيير "token" إلى "authtoken"
+  const token = req.cookies.authtoken;
 
   if (!token) {
     return res

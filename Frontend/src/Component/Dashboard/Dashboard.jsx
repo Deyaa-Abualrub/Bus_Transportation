@@ -10,6 +10,10 @@ import {
   Plus,
   X,
   Upload,
+  CheckCircle,
+  XCircle,
+  Clock3,
+  BookOpen,
 } from "lucide-react";
 import {
   BarChart,
@@ -23,6 +27,13 @@ import {
 
 const Dashboard = () => {
   const [stats, setStats] = useState({ buses: 0, drivers: 0, users: 0 });
+  const [bookingStats, setBookingStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  });
+  const [recentActivities, setRecentActivities] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [busImage, setBusImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -30,15 +41,22 @@ const Dashboard = () => {
   const [area, setArea] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
-  const [activityData] = useState([
-    { name: "Mon", users: 10, drivers: 4 },
-    { name: "Tue", users: 15, drivers: 6 },
-    { name: "Wed", users: 12, drivers: 5 },
-    { name: "Thu", users: 18, drivers: 7 },
-    { name: "Fri", users: 20, drivers: 9 },
-    { name: "Sat", users: 15, drivers: 6 },
-    { name: "Sun", users: 8, drivers: 3 },
-  ]);
+  const [activityData, setActivityData] = useState([]);
+
+  useEffect(() => {
+    const fetchActivityData = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:4000/dashboard/weekly-activity"
+        );
+        setActivityData(res.data);
+      } catch (err) {
+        console.error("Error fetching weekly activity:", err);
+      }
+    };
+
+    fetchActivityData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +71,36 @@ const Dashboard = () => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchBookingStats = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/dashboard/booking-statistics"
+        );
+        setBookingStats(response.data);
+      } catch (error) {
+        console.error("Error fetching booking statistics:", error);
+      }
+    };
+
+    fetchBookingStats();
+  }, []);
+
+  useEffect(() => {
+    const fetchRecentActivities = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:4000/dashboard/recent-activities"
+        );
+        setRecentActivities(res.data);
+      } catch (error) {
+        console.error("Error fetching recent activities:", error);
+      }
+    };
+
+    fetchRecentActivities();
   }, []);
 
   const handleImageChange = (e) => {
@@ -228,6 +276,80 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Booking Stats Cards */}
+        <div className="mb-6">
+          <h2
+            className="text-xl font-bold mb-4"
+            style={{ color: "var(--primary-color)" }}
+          >
+            Booking Statistics
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
+              <div
+                className="mr-4 p-3 rounded-full"
+                style={{ backgroundColor: "var(--third-color)" }}
+              >
+                <BookOpen size={24} style={{ color: "var(--primary-color)" }} />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-600">Total Bookings</h3>
+                <p
+                  className="text-3xl font-bold"
+                  style={{ color: "var(--primary-color)" }}
+                >
+                  {bookingStats.total}
+                </p>
+              </div>
+            </div>
+
+            <div className="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
+              <div
+                className="mr-4 p-3 rounded-full"
+                style={{ backgroundColor: "var(--third-color)" }}
+              >
+                <Clock3 size={24} style={{ color: "#F59E0B" }} />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-600">Pending</h3>
+                <p className="text-3xl font-bold text-amber-500">
+                  {bookingStats.pending}
+                </p>
+              </div>
+            </div>
+
+            <div className="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
+              <div
+                className="mr-4 p-3 rounded-full"
+                style={{ backgroundColor: "var(--third-color)" }}
+              >
+                <CheckCircle size={24} style={{ color: "#10B981" }} />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-600">Approved</h3>
+                <p className="text-3xl font-bold text-green-500">
+                  {bookingStats.approved}
+                </p>
+              </div>
+            </div>
+
+            <div className="stat-card bg-white p-6 rounded-lg shadow-md flex items-center">
+              <div
+                className="mr-4 p-3 rounded-full"
+                style={{ backgroundColor: "var(--third-color)" }}
+              >
+                <XCircle size={24} style={{ color: "#EF4444" }} />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-600">Rejected</h3>
+                <p className="text-3xl font-bold text-red-500">
+                  {bookingStats.rejected}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Analytics Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -276,28 +398,25 @@ const Dashboard = () => {
               <Clock size={20} style={{ color: "var(--secondary-color)" }} />
             </div>
             <ul>
-              <li className="py-3 border-b flex justify-between">
-                <span className="text-gray-700">New driver registered</span>
-                <span className="text-gray-500 text-sm">10 minutes ago</span>
-              </li>
-              <li className="py-3 border-b flex justify-between">
-                <span className="text-gray-700">3 new user bookings</span>
-                <span className="text-gray-500 text-sm">25 minutes ago</span>
-              </li>
-              <li className="py-3 border-b flex justify-between">
-                <span className="text-gray-700">Driver request approved</span>
-                <span className="text-gray-500 text-sm">1 hour ago</span>
-              </li>
-              <li className="py-3 border-b flex justify-between">
-                <span className="text-gray-700">New contact message</span>
-                <span className="text-gray-500 text-sm">2 hours ago</span>
-              </li>
-              <li className="py-3 flex justify-between">
-                <span className="text-gray-700">
-                  System maintenance completed
-                </span>
-                <span className="text-gray-500 text-sm">5 hours ago</span>
-              </li>
+              {recentActivities.map((activity, index) => (
+                <li
+                  key={index}
+                  className={`py-3 ${
+                    index !== recentActivities.length - 1 ? "border-b" : ""
+                  } flex justify-between`}
+                >
+                  <span className="text-gray-700">{activity.message}</span>
+                  <span className="text-gray-500 text-sm">
+                    {new Date(activity.time).toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

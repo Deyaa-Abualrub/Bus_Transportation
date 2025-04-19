@@ -163,7 +163,6 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // إذا كان هناك تغيير في كلمة المرور، نقوم بتشفيرها
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;

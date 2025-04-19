@@ -7,6 +7,9 @@ const {
   getUsers,
   getAllDrivers,
   getAllBuses,
+  getRecentActivities,
+  getWeeklyActivity,
+  getBookingStatistics,
 } = require("../controllers/dashboardController");
 const { approveDriver, rejectDriver } = require("../controllers/driverConroller");
 
@@ -27,5 +30,9 @@ router.put("/drivers/:driverId/reject", rejectDriver);
 router.get("/users", getUsers);
 router.get("/drivers", getAllDrivers);
 router.get("/buses", getAllBuses);
+
+router.get("/recent-activities", getRecentActivities);
+router.get("/weekly-activity", getWeeklyActivity);
+router.get("/booking-statistics", getBookingStatistics);
 
 module.exports = router;

@@ -8,8 +8,25 @@ import {
   Users,
   Bus,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:4000/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+      navigate("/signin");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
   return (
     <div
       className="sidebar text-white w-64 h-screen p-5"
@@ -75,15 +92,14 @@ const Sidebar = () => {
             Buses
           </Link>
         </li>
-
         <li className="mt-6 pt-6 border-t border-gray-700">
-          <Link
-            to="/signin"
-            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          <button
+            onClick={handleLogout}
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all w-full text-left"
           >
             <LogOut className="mr-2" size={18} />
             Logout
-          </Link>
+          </button>
         </li>
       </ul>
     </div>
