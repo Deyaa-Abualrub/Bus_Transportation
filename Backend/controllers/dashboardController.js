@@ -29,8 +29,7 @@ const getAllDrivers = async (req, res) => {
   try {
     const drivers = await Driver.findAll({
       where: {
-        isdeleted: false,
-        status: "approved", // ✅ شرط الموافقة
+        status: "approved",
       },
       attributes: ["driver_id", "full_name", "email", "phone_number"],
       limit,
@@ -89,7 +88,7 @@ const getUsers = async (req, res) => {
 };
 
 const getDriverRequests = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query; // إضافة pagination
+  const { page = 1, limit = 10 } = req.query;
   const offset = (page - 1) * limit;
 
   try {

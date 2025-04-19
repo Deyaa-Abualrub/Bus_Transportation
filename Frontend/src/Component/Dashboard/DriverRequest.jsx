@@ -88,6 +88,34 @@ const DriverRequests = () => {
     setViewImage({ id: null, type: null });
   };
 
+  const handleApprove = async (driverId) => {
+    try {
+      await axios.put(
+        `http://localhost:4000/dashboard/drivers/${driverId}/approve`
+      );
+      setDrivers(
+        (prev) => prev.filter((d) => d.driver_id !== driverId) // حذف من القائمة بعد الموافقة
+      );
+    } catch (error) {
+      console.error("Error approving driver:", error);
+      alert("Failed to approve driver");
+    }
+  };
+
+  const handleReject = async (driverId) => {
+    try {
+      await axios.put(
+        `http://localhost:4000/dashboard/drivers/${driverId}/reject`
+      );
+      setDrivers(
+        (prev) => prev.filter((d) => d.driver_id !== driverId) // حذف من القائمة بعد الرفض
+      );
+    } catch (error) {
+      console.error("Error rejecting driver:", error);
+      alert("Failed to reject driver");
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -192,12 +220,16 @@ const DriverRequests = () => {
                       {driver.status === "pending" && (
                         <div className="flex gap-2">
                           <button
+                            onClick={() => handleApprove(driver.driver_id)}
                             className="py-1 px-3 rounded text-white text-sm"
                             style={{ backgroundColor: "var(--primary-color)" }}
                           >
                             Approve
                           </button>
-                          <button className="py-1 px-3 rounded text-white bg-red-500 hover:bg-red-600 text-sm">
+                          <button
+                            onClick={() => handleReject(driver.driver_id)}
+                            className="py-1 px-3 rounded text-white bg-red-500 hover:bg-red-600 text-sm"
+                          >
                             Reject
                           </button>
                         </div>

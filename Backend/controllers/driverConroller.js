@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const cookieParser = require("cookie-parser");
+const Bus = require("../models/Buses");
 
 exports.signinDriver = async (req, res) => {
   try {
@@ -109,3 +110,52 @@ exports.registerDriver = async (req, res) => {
     res.status(500).json({ message: "Error registering driver", error });
   }
 };
+
+exports.approveDriver = async (req, res) => {
+  const { driverId } = req.params;
+
+  try {
+    const driver = await Driver.findByPk(driverId);
+    if (!driver) {
+      return res.status(404).json({ message: "Driver not found" });
+    }
+
+    const availableBus = await Bus.findOne({ where: { driver_id: null } });
+    if (!availableBus) {
+      return res.status(400).json({ message: "No available bus found" });
+    }
+
+    driver.status = "approved";
+    driver.bus_id = availableBus.bus_id;
+    await driver.save();
+
+    availableBus.driver_id = driver.driver_id;
+    await availableBus.save();
+
+    res.status(200).json({ message: "Driver approved and assigned to a bus" });
+  } catch (error) {
+    console.error("Error approving driver:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.rejectDriver = async (req, res) => {
+  const { driverId } = req.params;
+
+  try {
+    const driver = await Driver.findByPk(driverId);
+    if (!driver) {
+      return res.status(404).json({ message: "Driver not found" });
+    }
+
+    driver.status = "rejected";
+    driver.isdeleted = true;
+    await driver.save();
+
+    res.status(200).json({ message: "Driver rejected and marked as deleted" });
+  } catch (error) {
+    console.error("Error rejecting driver:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+

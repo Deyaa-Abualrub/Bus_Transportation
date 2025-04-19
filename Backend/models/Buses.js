@@ -33,7 +33,6 @@ const Bus = sequelize.define(
     },
     route_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       references: {
         model: Route,
         key: "route_id",
@@ -61,7 +60,7 @@ const Bus = sequelize.define(
       allowNull: false,
       defaultValue: 1,
       validate: {
-        isIn: [[1, 2, 3]],
+        isIn: [[1, 2, 3 , 4]],
       },
     },
     status_change_time: {
