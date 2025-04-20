@@ -16,6 +16,7 @@ import ContactMessages from "./Component/Dashboard/ContactMessage";
 import UsersPage from "./Component/Dashboard/Users";
 import DriversPage from "./Component/Dashboard/Drivers";
 import BusesPage from "./Component/Dashboard/Buses";
+import TestimonialsRequests from "./Component/Dashboard/TestimonialsRequest";
 
 function App() {
   const location = useLocation();
@@ -26,6 +27,7 @@ function App() {
     location.pathname === "/contact-messages" ||
     location.pathname === "/users" ||
     location.pathname === "/drivers" ||
+    location.pathname === "/testimonials-requests" ||
     location.pathname === "/buses";
 
   return (
@@ -47,6 +49,10 @@ function App() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/drivers" element={<DriversPage />} />
         <Route path="/buses" element={<BusesPage />} />
+        <Route
+          path="/testimonials-requests"
+          element={<TestimonialsRequests />}
+        />
       </Routes>
       {!hideNavAndFooter && <Footer />}
     </>

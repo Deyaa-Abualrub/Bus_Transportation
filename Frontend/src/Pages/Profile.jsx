@@ -45,14 +45,12 @@ const Profile = ({ isOpen, onClose, onUpdateName }) => {
     });
   };
 
-  // دالة إرسال التحديث
   const handleSubmit = (e) => {
     e.preventDefault();
 
     axios
       .put(`http://localhost:4000/auth/profile/${userId}`, formData)
       .then((response) => {
-        // استخدام SweetAlert لعرض الرسالة بنجاح
         Swal.fire({
           icon: "success",
           title: "Success",

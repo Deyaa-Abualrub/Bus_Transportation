@@ -3,6 +3,7 @@ const Driver = require("../models/Driver");
 const User = require("../models/User");
 const ContactMessage = require("../models/Contact");
 const Booking = require("../models/Booking");
+const Testimonial = require("../models/Testimonials");
 const nodemailer = require("nodemailer");
 const { Op, fn, col, literal } = require("sequelize");
 require("dotenv").config();
@@ -269,6 +270,41 @@ const getBookingStatistics = async (req, res) => {
   }
 };
 
+const getAllTestimonials = async (req, res) => {
+  try {
+    const testimonials = await Testimonial.findAll({
+      include: {
+        model: User,
+        as: "User",
+        attributes: ["full_name"],
+      },
+      order: [["created_at", "DESC"]],
+    });
+    res.status(200).json(testimonials);
+  } catch (error) {
+    console.error("Error fetching testimonials:", error);
+    res.status(500).json({ message: "Error fetching testimonials" });
+  }
+};
+
+const updateTestimonialStatus = async (req, res) => {
+  const { testimonialId } = req.params;
+  const { status } = req.body;
+
+  try {
+    const testimonial = await Testimonial.findByPk(testimonialId);
+    if (!testimonial) return res.status(404).json({ message: "Testimonial not found" });
+
+    testimonial.status = status;
+    await testimonial.save();
+
+    res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ message: "Failed to update testimonial status" });
+  }
+};
+
 const getContactMessages = async (req, res) => {
   const { page = 1, limit = 10 } = req.query; // إضافة pagination
   const offset = (page - 1) * limit;
@@ -331,4 +367,6 @@ module.exports = {
   replyToMessage,
   getAllDrivers,
   getAllBuses,
+  getAllTestimonials,
+  updateTestimonialStatus
 };

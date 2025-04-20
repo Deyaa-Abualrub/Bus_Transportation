@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Testimonial = require("./Testimonials");
 
 const User = sequelize.define(
   "User",
@@ -48,5 +49,12 @@ const User = sequelize.define(
     updatedAt: "updated_at",
   }
 );
+
+User.associate = (models) => {
+  User.hasMany(models.Testimonial, {
+    foreignKey: "user_id",
+    as: Testimonial,
+  });
+};
 
 module.exports = User;

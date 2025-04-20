@@ -7,6 +7,7 @@ import {
   BarChart2,
   Users,
   Bus,
+  FileText
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -92,6 +93,16 @@ const Sidebar = () => {
             Buses
           </Link>
         </li>
+        <li className="mb-2">
+          <Link
+            to="/testimonials-requests"
+            className="flex items-center py-2 px-3 rounded hover:bg-opacity-20 hover:bg-[var(--secondary-color)] transition-all"
+          >
+            <FileText className="mr-2" size={18} />
+            Testimonials Requests
+          </Link>
+        </li>
+
         <li className="mt-6 pt-6 border-t border-gray-700">
           <button
             onClick={handleLogout}

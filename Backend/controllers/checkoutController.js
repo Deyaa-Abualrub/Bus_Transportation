@@ -1,5 +1,3 @@
-// في هذا التعديل، نضيف حفظ العملية في قاعدة البيانات مباشرة بعد الدفع عبر Stripe
-// بملف stripeController، سنستخدم بيانات metadata لحفظ العملية
 
 const Booking = require("../models/Booking");
 const Bus = require("../models/Buses");

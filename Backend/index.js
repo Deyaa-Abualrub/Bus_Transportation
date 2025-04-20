@@ -13,6 +13,7 @@ const passport = require("passport");
 const session = require("express-session");
 const driverRoutes = require("./routes/driverRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const testimonials = require("./routes/testimonialsRoutes");
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use(
   })
 );
 
+app.use('/bus', testimonials);
 app.use("/bus", contactMessage);
 app.use("/bus", searchBus);
 app.use("/bus", checkout);
@@ -52,6 +54,12 @@ app.use("/auth", googleRoutes);
 app.use("/dashboard", dashboardRoutes);
 
 app.use("/Uploads", express.static(path.join(__dirname, "Uploads")));
+
+const User = require("../Backend/models/User");
+const Testimonial = require("../Backend/models/Testimonials");
+
+User.hasMany(Testimonial, { foreignKey: "user_id", as: "testimonial" });
+Testimonial.belongsTo(User, { foreignKey: "user_id", as: "User" });
 
 const PORT = 4000;
 app.listen(PORT, () => {

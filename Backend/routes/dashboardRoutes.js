@@ -10,6 +10,8 @@ const {
   getRecentActivities,
   getWeeklyActivity,
   getBookingStatistics,
+  getAllTestimonials,
+  updateTestimonialStatus,
 } = require("../controllers/dashboardController");
 const { approveDriver, rejectDriver } = require("../controllers/driverConroller");
 
@@ -34,5 +36,9 @@ router.get("/buses", getAllBuses);
 router.get("/recent-activities", getRecentActivities);
 router.get("/weekly-activity", getWeeklyActivity);
 router.get("/booking-statistics", getBookingStatistics);
+
+router.get("/testimonials", getAllTestimonials);
+router.put("/testimonials/:testimonialId/status", updateTestimonialStatus);
+
 
 module.exports = router;
