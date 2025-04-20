@@ -1,5 +1,7 @@
 const Joi = require("joi");
 const User = require("../models/User");
+const Booking = require("../models/Booking");
+const Testimonial = require("../models/Testimonials");
 const sequelize = require("../config/database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -8,15 +10,15 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const signupSchema = Joi.object({
   full_name: Joi.string()
-    .regex(/^\S+\s+\S+\s+\S+\s+\S+$/) // التأكد أن الاسم يحتوي على 4 مقاطع على الأقل مفصولة بمسافة
+    .regex(/^\S+\s+\S+\s+\S+\s+\S+$/)
     .message("Full name must have at least 4 words")
     .required(),
 
   email: Joi.string().email().required(),
 
   password: Joi.string()
-    .min(8) // الطول الأدنى 8 أحرف
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/) // يجب أن تحتوي على حرف صغير وكبير ورقم
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .message(
       "Password must contain at least one uppercase letter, one lowercase letter, and one number"
     )
@@ -188,10 +190,70 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const getUserBookings = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Booking.findAndCountAll({
+      where: { user_id },
+      limit,
+      offset,
+      order: [["created_at", "DESC"]],
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(200).json({
+      bookings: rows,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching bookings", error: error.message });
+  }
+};
+
+
+const getUserTestimonials = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Testimonial.findAndCountAll({
+      where: { user_id },
+      limit,
+      offset,
+      order: [["created_at", "DESC"]],
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    return res.status(200).json({
+      testimonials: rows,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching testimonials", error: error.message });
+  }
+};
+
+
 module.exports = {
   signup,
   signin,
   logoutUser,
   profile,
   updateProfile,
+  getUserBookings,
+  getUserTestimonials,
 };

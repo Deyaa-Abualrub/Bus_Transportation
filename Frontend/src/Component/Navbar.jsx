@@ -186,15 +186,15 @@ export default function Navbar() {
                     >
                       <MenuItem>
                         {({ active }) => (
-                          <button
-                            onClick={openProfileModal}
+                          <Link
+                            to="/profile"
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block w-full text-left px-4 py-2 text-sm text-gray-700"
                             )}
                           >
                             Your Profile
-                          </button>
+                          </Link>
                         )}
                       </MenuItem>
                       <MenuItem>

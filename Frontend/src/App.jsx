@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Navbar from "../src/Component/Navbar";
 import Footer from "../src/Component/Footer";
 import Home from "./Pages/Home";
@@ -32,6 +33,7 @@ function App() {
 
   return (
     <>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />{" "}
       {!hideNavAndFooter && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />

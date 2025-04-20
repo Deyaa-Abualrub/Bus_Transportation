@@ -293,7 +293,8 @@ const updateTestimonialStatus = async (req, res) => {
 
   try {
     const testimonial = await Testimonial.findByPk(testimonialId);
-    if (!testimonial) return res.status(404).json({ message: "Testimonial not found" });
+    if (!testimonial)
+      return res.status(404).json({ message: "Testimonial not found" });
 
     testimonial.status = status;
     await testimonial.save();
@@ -355,7 +356,6 @@ const replyToMessage = async (req, res) => {
   }
 };
 
-// Export them
 module.exports = {
   getUsers,
   getDashboardStats,
@@ -368,5 +368,5 @@ module.exports = {
   getAllDrivers,
   getAllBuses,
   getAllTestimonials,
-  updateTestimonialStatus
+  updateTestimonialStatus,
 };
