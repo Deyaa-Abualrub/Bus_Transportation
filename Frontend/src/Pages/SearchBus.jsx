@@ -1,17 +1,18 @@
-
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { setBusDetails } from "../redux/checkoutSlice"; 
-import { useNavigate } from "react-router-dom"; 
+import { setBusDetails } from "../redux/checkoutSlice";
+import { useNavigate } from "react-router-dom";
 import BookingForm from "../Component/BookingForm";
+import { toast } from "react-hot-toast";
 
 const SearchBus = () => {
   const [buses, setBuses] = useState([]);
   const { from, to, searchType } = useSelector((state) => state.bookingForm);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBuses = async () => {
@@ -22,6 +23,9 @@ const SearchBus = () => {
             from,
             to,
             searchType,
+          },
+          {
+            withCredentials: true,
           }
         );
         setBuses(response.data);
@@ -33,9 +37,31 @@ const SearchBus = () => {
     fetchBuses();
   }, [from, to, searchType]);
 
-  // دالة لتحديث الـ Redux store عند النقر على "Booking Now"
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/bus/check", {
+          withCredentials: true,
+        });
+
+        if (res.status !== 200) throw new Error();
+        setIsAuthenticated(true);
+      } catch (err) {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Please sign in to continue.");
+      navigate("/signin");
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleBooking = (bus) => {
-    // إرسال بيانات الحافلة إلى الـ Redux store
     dispatch(
       setBusDetails({
         busRoute: bus.bus_route,
@@ -90,6 +116,7 @@ const SearchBus = () => {
             </button>
           </div>
         ) : (
+          Array.isArray(buses) &&
           buses.map((bus, index) => (
             <div
               key={index}

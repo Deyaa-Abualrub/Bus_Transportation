@@ -68,10 +68,10 @@ const signup = async (req, res) => {
       message: "Signup successful",
       token,
       user: {
-        user_id: newUser.user_id, // إرجاع الـ user_id هنا
+        user_id: newUser.user_id, 
         full_name: newUser.full_name,
         email: newUser.email,
-        role: newUser.role, // إرجاع الـ role مع بيانات المستخدم
+        role: newUser.role, 
       },
     });
   } catch (error) {
@@ -128,7 +128,7 @@ const signin = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("authtoken");
+  res.clearCookie("authToken");
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
