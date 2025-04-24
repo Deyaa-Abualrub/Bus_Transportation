@@ -63,4 +63,5 @@ const Driver = sequelize.define(
   }
 );
 
+
 module.exports = Driver;

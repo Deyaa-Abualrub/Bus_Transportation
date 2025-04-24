@@ -1,16 +1,28 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Bus, Users, UserCheck } from "lucide-react";
+import { Bus, Users, UserCheck, Bookmark } from "lucide-react";
 import statistic_image from "../assets/statistic_image.avif";
 
 const Statistic = () => {
-  const [stats, setStats] = useState({ buses: 0, drivers: 0, users: 0 });
+  const [stats, setStats] = useState({
+    buses: 0,
+    drivers: 0,
+    users: 0,
+    weeklyBookings: 0,
+  });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/dashboard/stats");
-        setStats(res.data);
+        const [statsRes, bookingsRes] = await Promise.all([
+          axios.get("http://localhost:4000/dashboard/stats"),
+          axios.get("http://localhost:4000/dashboard/weekly-bookings"),
+        ]);
+
+        setStats({
+          ...statsRes.data,
+          weeklyBookings: bookingsRes.data.weeklyBookings,
+        });
       } catch (err) {
         console.error("Error fetching stats:", err);
       }
@@ -39,12 +51,12 @@ const Statistic = () => {
         </p>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-white">
+      <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-white">
         <div
-          className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg flex items-center border-l-4"
+          className="bg-white/10 backdrop-blur-md pl-10 rounded-xl shadow-lg flex items-center border-l-4"
           style={{ borderLeftColor: "var(--secondary-color)" }}
         >
-          <div className="mr-5 p-4 rounded-full bg-white bg-opacity-10">
+          <div className="mr-5 ml-[-8px] p-4 rounded-full bg-white bg-opacity-10">
             <Bus size={36} style={{ color: "var(--secondary-color)" }} />
           </div>
           <div>
@@ -94,8 +106,29 @@ const Statistic = () => {
             >
               {stats.users}
             </p>
-            <h3 className="text-lg font-medium text-gray-100">Happy Users</h3>
+            <h3 className="text-lg font-medium text-gray-100">Users</h3>
             <p className="text-sm text-gray-300">Students & faculty onboard</p>
+          </div>
+        </div>
+
+        <div
+          className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg flex items-center border-l-4"
+          style={{ borderLeftColor: "var(--secondary-color)" }}
+        >
+          <div className="mr-5 p-4 rounded-full bg-white bg-opacity-10">
+            <Bookmark size={36} style={{ color: "var(--secondary-color)" }} />
+          </div>
+          <div>
+            <p
+              className="text-4xl font-bold"
+              style={{ color: "var(--third-color)" }}
+            >
+              {stats.weeklyBookings}
+            </p>
+            <h3 className="text-lg font-medium text-gray-100">
+              Weekly Bookings
+            </h3>
+            <p className="text-sm text-gray-300">User reservations this week</p>
           </div>
         </div>
       </div>

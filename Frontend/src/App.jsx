@@ -18,6 +18,8 @@ import UsersPage from "./Component/Dashboard/Users";
 import DriversPage from "./Component/Dashboard/Drivers";
 import BusesPage from "./Component/Dashboard/Buses";
 import TestimonialsRequests from "./Component/Dashboard/TestimonialsRequest";
+import DriverProfile from "./Pages/DriverProfile";
+import Invoice from "./Pages/Invoice";
 
 function App() {
   const location = useLocation();
@@ -29,7 +31,8 @@ function App() {
     location.pathname === "/users" ||
     location.pathname === "/drivers" ||
     location.pathname === "/testimonials-requests" ||
-    location.pathname === "/buses";
+    location.pathname === "/buses" ||
+    location.pathname.startsWith("/driver/profile");
 
   return (
     <>
@@ -51,6 +54,8 @@ function App() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/drivers" element={<DriversPage />} />
         <Route path="/buses" element={<BusesPage />} />
+        <Route path="/driver/profile/:driverId" element={<DriverProfile />} />
+        <Route path="/invoice/:bookingId" element={<Invoice />} />
         <Route
           path="/testimonials-requests"
           element={<TestimonialsRequests />}

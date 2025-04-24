@@ -43,7 +43,7 @@ export default function Navbar() {
         {},
         { withCredentials: true }
       );
-      localStorage.removeItem("authtoken");
+      localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       localStorage.setItem("isAuthenticated", false);
       setIsAuthenticated(false);

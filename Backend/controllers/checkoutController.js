@@ -73,6 +73,7 @@ const checkoutController = async (req, res) => {
       bookingId: newBooking.booking_id,
     });
   } catch (error) {
+    console.error("SERVER ERROR:", error);
     return res.status(500).json({
       message: "Error processing payment and booking",
       error: error.message,
@@ -125,4 +126,39 @@ const stripeController = async (req, res) => {
   }
 };
 
-module.exports = { checkoutController, stripeController };
+const getInvoiceById = async (req, res) => {
+  const { bookingId } = req.params;
+
+  try {
+    const booking = await Booking.findOne({
+      where: { booking_id: bookingId },
+      include: [
+        {
+          model: User,
+          attributes: ["full_name"],
+        },
+      ],
+    });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    const invoiceData = {
+      booking_id: booking.booking_id,
+      user_name: booking.User.full_name,
+      bus_number: booking.bus_number,
+      seat_number: booking.seat_number,
+      payment_method: booking.payment_method,
+      total_price: booking.total_price,
+      created_at: booking.created_at,
+    };
+
+    res.status(200).json(invoiceData);
+  } catch (error) {
+    console.error("Error fetching invoice:", error);
+    res.status(500).json({ message: "Failed to load invoice" });
+  }
+};
+
+module.exports = { checkoutController, stripeController , getInvoiceById };

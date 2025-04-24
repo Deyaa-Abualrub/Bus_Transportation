@@ -2,7 +2,8 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -12,13 +13,45 @@ const Checkout = () => {
   const [seatCount, setSeatCount] = useState(1);
   const [totalPrice, setTotalPrice] = useState(bus.price);
 
+  useEffect(() => {}, [user]);
+
   const handleSeatChange = (e) => {
     const newSeatCount = parseInt(e.target.value);
     setSeatCount(newSeatCount);
     setTotalPrice(bus.price * newSeatCount);
   };
 
+  const showSuccessToast = (message) => {
+    toast.success(`✅ Payment Successful! ${message}`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
+  const showErrorToast = (message) => {
+    toast.error(`❌ ${message}`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
   const handlePayment = async () => {
+    if (!user || !user.user_id) {
+      return showErrorToast("User not authenticated");
+    }
+
+    if (seatCount > bus.seatAvailable) {
+      return showErrorToast("You selected more seats than available.");
+    }
+
     const paymentData = {
       busRoute: bus.busRoute,
       busNumber: bus.busNumber,
@@ -43,89 +76,78 @@ const Checkout = () => {
         );
       }
 
-      Swal.fire({
-        title: "Payment Successful!",
-        text: response.data.message,
-        icon: "success",
-        confirmButtonColor: "#1f2937",
-      });
-
-      navigate("/");
+      showSuccessToast(response.data.message);
+      setTimeout(() => navigate(`/invoice/${response.data.bookingId}`), 1500);
     } catch (error) {
       console.error("Payment failed", error);
-      Swal.fire({
-        title: "Payment Failed",
-        text: "There was an error with your payment. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#fb2c36",
-      });
+      showErrorToast(
+        "Payment Failed. There was an error with your payment. Please try again."
+      );
     }
   };
-    
+
   useEffect(() => {
     if (paymentMethod === "paypal" && window.paypal) {
       const container = document.getElementById("paypal-button-container");
       if (container) container.innerHTML = "";
-  
-      window.paypal.Buttons({
-        createOrder: (data, actions) => {
-          return actions.order.create({
-            purchase_units: [
-              {
-                amount: {
-                  value: totalPrice.toString(),
-                  currency_code: "USD",
+
+      window.paypal
+        .Buttons({
+          createOrder: (data, actions) => {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: totalPrice.toString(),
+                    currency_code: "USD",
+                  },
                 },
-              },
-            ],
-          });
-        },
-        onApprove: async (data, actions) => {
-          const details = await actions.order.capture();
-  
-          try {
-            const response = await axios.post("http://localhost:4000/bus/paypaypal", {
-              busRoute: bus.busRoute,
-              busNumber: bus.busNumber,
-              price: totalPrice,
-              seatAvailable: bus.seatAvailable - seatCount,
-              paymentMethod: "paypal",
-              userId: user.user_id,
-              seatNumber: seatCount,
-              paypalOrderId: data.orderID,
+              ],
             });
-  
-            Swal.fire({
-              title: "Payment Successful!",
-              text: response.data.message,
-              icon: "success",
-              confirmButtonColor: "#1f2937",
-            });
-  
-            navigate("/");
-          } catch (error) {
-            Swal.fire({
-              title: "Booking Failed",
-              text: "Payment succeeded, but booking failed.",
-              icon: "error",
-            });
-          }
-        },
-        onError: (err) => {
-          console.error("PayPal Error:", err);
-          Swal.fire({
-            title: "PayPal Error",
-            text: "There was an issue with PayPal payment.",
-            icon: "error",
-          });
-        },
-      }).render("#paypal-button-container");
+          },
+          onApprove: async (data, actions) => {
+            const details = await actions.order.capture();
+
+            try {
+              const response = await axios.post(
+                "http://localhost:4000/bus/paypaypal",
+                {
+                  busRoute: bus.busRoute,
+                  busNumber: bus.busNumber,
+                  price: totalPrice,
+                  seatAvailable: bus.seatAvailable - seatCount,
+                  paymentMethod: "paypal",
+                  userId: user.user_id,
+                  seatNumber: seatCount,
+                  paypalOrderId: data.orderID,
+                }
+              );
+
+              showSuccessToast(response.data.message);
+              setTimeout(
+                () => navigate(`/invoice/${response.data.bookingId}`),
+                1500
+              );
+            } catch (error) {
+              showErrorToast(
+                "Booking Failed. Payment succeeded, but booking failed."
+              );
+            }
+          },
+          onError: (err) => {
+            console.error("PayPal Error:", err);
+            showErrorToast(
+              "PayPal Error. There was an issue with PayPal payment."
+            );
+          },
+        })
+        .render("#paypal-button-container");
     }
   }, [paymentMethod, totalPrice, seatCount]);
-  
 
   return (
     <div className="bg-[#c2545400] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="bg-gradient-to-r from-[var(--third-color)] to-[var(--primary-color)] p-6">
           <h2 className="text-3xl font-bold text-gray-800">
@@ -164,7 +186,6 @@ const Checkout = () => {
             <h3 className="text-xl font-bold text-[var(--primary-color)] mb-4">
               Bus Information
             </h3>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col">
                 <span className="text-[var(--text-color)] text-sm">Route</span>

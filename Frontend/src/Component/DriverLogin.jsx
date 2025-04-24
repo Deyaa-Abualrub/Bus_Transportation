@@ -39,7 +39,9 @@ const DriverLogin = () => {
           confirmButtonColor: "var(--secondary-color)",
         }).then(() => {
           // Redirect to home or dashboard
-          navigate("/");
+          navigate(`/driver/profile/${response.data.driver.driver_id}`);
+
+
         });
       } else {
         setMessage(`Error: ${response.data.message || "Invalid credentials"}`);

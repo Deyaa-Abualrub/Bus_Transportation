@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast"; // ← تعديل هون
 import { User, Mail, Lock } from "react-feather";
 import lr_video from "../assets/lr-video.mp4";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/checkoutSlice";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
-  const [isRegister, setIsRegister] = useState(false); // حالة التسجيل أو الدخول
+  const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
@@ -21,7 +20,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // قراءة بيانات المستخدم من localStorage
   useEffect(() => {
     const authStatus = localStorage.getItem("isAuthenticated");
     const storedUserName = localStorage.getItem("user");
@@ -59,27 +57,17 @@ const Login = () => {
 
       dispatch(setUser({ username: user.full_name, user_id: user.user_id }));
 
-      Swal.fire({
-        title: "Welcome back!",
-        text: res.data.message,
-        icon: "success",
-        confirmButtonColor: "#1f2937",
-      });
+      toast.success(res.data.message || "Welcome back!");
 
       localStorage.setItem("isAuthenticated", true);
 
       if (user.role === "admin") {
-        navigate("/dashboard"); // إذا كان الدور admin، انتقل إلى صفحة لوحة التحكم
+        navigate("/dashboard");
       } else {
-        navigate("/"); // إذا كان الدور user، انتقل إلى الصفحة الرئيسية
+        navigate("/");
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error occurred",
-        text: error.response?.data?.message || "Login failed",
-        icon: "error",
-        confirmButtonColor: "#eb2323",
-      });
+      toast.error(error.response?.data?.message || "Login failed");
     }
     setLoading(false);
   };
@@ -101,29 +89,17 @@ const Login = () => {
 
       dispatch(setUser({ username: user.full_name, user_id: user.user_id }));
 
-      Swal.fire({
-        title: "Welcome to the app!",
-        text: "Registration successful.",
-        icon: "success",
-        confirmButtonColor: "#1f2937",
-      });
+      toast.success("Registration successful. Welcome!");
 
       localStorage.setItem("isAuthenticated", true);
 
-      console.log(user.role);
-
       if (user.role === "admin") {
-        navigate("/dashboard"); // إذا كان الدور admin، انتقل إلى صفحة لوحة التحكم
+        navigate("/dashboard");
       } else {
-        navigate("/"); // إذا كان الدور user، انتقل إلى الصفحة الرئيسية
+        navigate("/");
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error occurred",
-        text: error.response?.data?.message || "Registration failed",
-        icon: "error",
-        confirmButtonColor: "#eb2323",
-      });
+      toast.error(error.response?.data?.message || "Registration failed");
     }
     setLoading(false);
   };
@@ -168,15 +144,8 @@ const Login = () => {
               </div>
 
               <GoogleLogin
-                onSuccess={handleLogin} // يمكنك تعديل هذا بناءً على احتياجك
-                onError={() =>
-                  Swal.fire({
-                    title: "Error",
-                    text: "Google login failed",
-                    icon: "error",
-                    confirmButtonColor: "#eb2323",
-                  })
-                }
+                onSuccess={handleLogin}
+                onError={() => toast.error("Google login failed")}
                 useOneTap
                 render={(renderProps) => (
                   <button

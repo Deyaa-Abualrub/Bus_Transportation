@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 const SearchBus = () => {
   const [buses, setBuses] = useState([]);
   const { from, to, searchType } = useSelector((state) => state.bookingForm);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  // const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,43 +37,52 @@ const SearchBus = () => {
     fetchBuses();
   }, [from, to, searchType]);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/bus/check", {
-          withCredentials: true,
-        });
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     try {
+  //       const res = await axios.get("http://localhost:4000/bus/check", {
+  //         withCredentials: true,
+  //       });
 
-        if (res.status !== 200) throw new Error();
-        setIsAuthenticated(true);
-      } catch (err) {
-        setIsAuthenticated(false);
+  //       if (res.status !== 200) throw new Error();
+  //       setIsAuthenticated(true);
+  //     } catch (err) {
+  //       setIsAuthenticated(false);
+  //     }
+  //   };
+
+  //   checkAuth();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     toast.error("Please sign in to continue.");
+  //     navigate("/signin");
+  //   }
+  // }, [isAuthenticated, navigate]);
+  const handleBooking = async (bus) => {
+    try {
+      const res = await axios.get("http://localhost:4000/bus/check", {
+        withCredentials: true,
+      });
+  
+      if (res.status === 200) {
+        dispatch(
+          setBusDetails({
+            busRoute: bus.bus_route,
+            busNumber: bus.bus_number,
+            price: bus.price,
+            seatAvailable: bus.seat_available,
+          })
+        );
+        navigate("/checkout");
       }
-    };
-
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
+    } catch (error) {
       toast.error("Please sign in to continue.");
       navigate("/signin");
     }
-  }, [isAuthenticated, navigate]);
-
-  const handleBooking = (bus) => {
-    dispatch(
-      setBusDetails({
-        busRoute: bus.bus_route,
-        busNumber: bus.bus_number,
-        price: bus.price,
-        seatAvailable: bus.seat_available,
-      })
-    );
-
-    // التوجيه إلى صفحة checkout بعد التحديث
-    navigate("/checkout");
   };
+  
 
   return (
     <div className="container-bus p-6 sm:p-8 rounded-xl shadow-lg mx-auto my-8 w-11/12 sm:w-4/5 border border-gray-100 bg-gradient-to-r from-white to-[var(--third-color)] bg-opacity-30">

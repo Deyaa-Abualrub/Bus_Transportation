@@ -356,6 +356,27 @@ const replyToMessage = async (req, res) => {
   }
 };
 
+const getWeeklyBookings = async (req, res) => {
+  try {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // بداية الأسبوع (الأحد)
+
+    const weeklyBookingsCount = await Booking.count({
+      where: {
+        created_at: {
+          [Op.gte]: startOfWeek,
+        },
+      },
+    });
+
+    res.status(200).json({ weeklyBookings: weeklyBookingsCount });
+  } catch (error) {
+    console.error("Error fetching weekly bookings:", error);
+    res.status(500).json({ message: "Error fetching weekly bookings" });
+  }
+};
+
 module.exports = {
   getUsers,
   getDashboardStats,
@@ -369,4 +390,5 @@ module.exports = {
   getAllBuses,
   getAllTestimonials,
   updateTestimonialStatus,
+  getWeeklyBookings,
 };

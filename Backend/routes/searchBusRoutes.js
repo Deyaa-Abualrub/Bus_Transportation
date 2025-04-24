@@ -6,7 +6,7 @@ const { addNewBus } = require("../controllers/searchBusController");
 const { authenticateUser } = require("../middleware/authMiddleware");
 
 router.post("/add", upload.single("busImage"), addNewBus);
-router.post("/searchbus",authenticateUser ,searchBus);
+router.post("/searchbus" ,searchBus);
 
 router.get("/check", authenticateUser, (req, res) => {
     res.status(200).json({ message: "User is authenticated" });

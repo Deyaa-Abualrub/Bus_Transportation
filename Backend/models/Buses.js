@@ -64,7 +64,7 @@ const Bus = sequelize.define(
       },
     },
     status_change_time: {
-      type: DataTypes.DATE, // To store the time when the status change happens
+      type: DataTypes.DATE,
       allowNull: true,
     },
     bus_image: {
@@ -89,13 +89,12 @@ Bus.beforeUpdate((bus, options) => {
     (bus.status === 1 || bus.status === 3) &&
     bus._previousDataValues.status === 2
   ) {
-    bus.status_change_time = new Date(new Date().getTime() + 30 * 60000); // Adding 30 minutes
+    bus.status_change_time = new Date(new Date().getTime() + 15 * 60000);
   }
 });
 
-// Bus.hasMany(Booking, {
-//   foreignKey: "bus_number", // العمود في جدول Booking
-//   sourceKey: "bus_number", // العمود في جدول Bus الذي نربطه به
-// });
+Bus.belongsTo(Driver, { foreignKey: "driver_id", as: "driver" });
+Driver.hasOne(Bus, { foreignKey: "driver_id", as: "bus" });
 
 module.exports = Bus;
+

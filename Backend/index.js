@@ -14,6 +14,7 @@ const session = require("express-session");
 const driverRoutes = require("./routes/driverRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const testimonials = require("./routes/testimonialsRoutes");
+const driverProfile = require("./routes/diverProfileRoutes");
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use("/bus/auth/driver", driverRoutes);
 app.use("/auth", userRoutes);
 app.use("/auth", googleRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/driver", driverProfile);
 
 app.use("/Uploads", express.static(path.join(__dirname, "Uploads")));
 

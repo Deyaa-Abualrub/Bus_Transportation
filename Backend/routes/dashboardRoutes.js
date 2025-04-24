@@ -12,6 +12,7 @@ const {
   getBookingStatistics,
   getAllTestimonials,
   updateTestimonialStatus,
+  getWeeklyBookings,
 } = require("../controllers/dashboardController");
 const { approveDriver, rejectDriver } = require("../controllers/driverConroller");
 
@@ -39,6 +40,8 @@ router.get("/booking-statistics", getBookingStatistics);
 
 router.get("/testimonials", getAllTestimonials);
 router.put("/testimonials/:testimonialId/status", updateTestimonialStatus);
+
+router.get("/weekly-bookings", getWeeklyBookings); 
 
 
 module.exports = router;

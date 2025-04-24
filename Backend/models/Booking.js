@@ -60,6 +60,7 @@ const Booking = sequelize.define(
 //   targetKey: "bus_number", // العمود في جدول Bus الذي نقارن به
 // });
 
+// Booking.belongsTo(User, { foreignKey: "user_id" });
 module.exports = Booking;
 
 // departure_location: {
