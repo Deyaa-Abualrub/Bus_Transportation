@@ -4,10 +4,7 @@ import axios from "axios";
 import {
   CreditCard,
   Bus,
-  CalendarDays,
-  Clock,
   User,
-  MapPin,
   Receipt,
   ArrowLeft,
 } from "lucide-react";
@@ -143,13 +140,6 @@ const Invoice = () => {
                           minute: "2-digit",
                         })
                       : "Time not available"}
-                  </span>
-                  <span className="ml-1 text-xs text-[var(--secondary-color)]">
-                    (
-                    {searchType === "launch_date"
-                      ? "Launch Time"
-                      : "Status Change Time"}
-                    )
                   </span>
                 </div>
               </div>

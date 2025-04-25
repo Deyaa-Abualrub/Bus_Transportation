@@ -11,6 +11,9 @@ import {
   Truck,
   Check,
   LogOut,
+  Edit,
+  Save,
+  X,
 } from "lucide-react";
 
 const DriverProfile = () => {
@@ -18,6 +21,7 @@ const DriverProfile = () => {
   const navigate = useNavigate();
   const [driver, setDriver] = useState(null);
   const [currentStatus, setCurrentStatus] = useState(null);
+  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
     phone_number: "",
@@ -51,16 +55,19 @@ const DriverProfile = () => {
   };
 
   const updateBusStatus = async (status) => {
+    if (currentStatus === status) return; // Prevent unnecessary updates
+
+    const toastId = "status-update";
     try {
       await axios.put(`http://localhost:4000/driver/bus-status/${driverId}`, {
         status,
+        fromStatus: currentStatus,
       });
-      toast.success(`Status updated: ${statusLabels[status]}`, {
-        id: "status-update",
-      });
+
+      toast.success(`Status updated: ${statusLabels[status]}`, { id: toastId });
       setCurrentStatus(status);
     } catch (err) {
-      toast.error("Error updating bus status", { id: "status-error" });
+      toast.error("Error updating bus status", { id: toastId });
     }
   };
 
@@ -71,6 +78,7 @@ const DriverProfile = () => {
         formData
       );
       toast.success("Profile updated successfully", { id: "profile-update" });
+      setEditMode(false);
       fetchDriver();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update profile", {
@@ -90,6 +98,19 @@ const DriverProfile = () => {
       navigate("/");
     } catch (err) {
       toast.error("Failed to logout", { id: "logout-error" });
+    }
+  };
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    // Reset form if cancelling edit
+    if (editMode) {
+      setFormData({
+        full_name: driver.full_name,
+        phone_number: driver.phone_number,
+        old_password: "",
+        new_password: "",
+      });
     }
   };
 
@@ -123,7 +144,7 @@ const DriverProfile = () => {
                       className="w-full h-full rounded-full flex items-center justify-center"
                       style={{ backgroundColor: "var(--secondary-color)" }}
                     >
-                      <User size={32} sm:size={40} color="white" />
+                      <User size={32} color="white" />
                     </div>
                   </div>
                 </div>
@@ -131,6 +152,10 @@ const DriverProfile = () => {
                   <h1 className="text-xl sm:text-2xl font-bold">
                     {driver?.full_name || "Driver"}
                   </h1>
+                  <div className="flex items-center justify-center sm:justify-start mt-1">
+                    <Phone size={16} className="mr-2" />
+                    <span>{driver?.phone_number || "No phone number"}</span>
+                  </div>
                   <p className="opacity-75 flex items-center justify-center sm:justify-start mt-1">
                     <Mail size={16} className="mr-2" />
                     {driver?.email || "loading@email.com"}
@@ -246,160 +271,182 @@ const DriverProfile = () => {
 
                 {/* Profile Information */}
                 <div className="mb-6">
-                  <h2
-                    className="text-lg sm:text-xl font-medium mb-3 sm:mb-4"
-                    style={{ color: "var(--primary-color)" }}
-                  >
-                    Profile Information
-                  </h2>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                    {/* Left column - Personal info */}
-                    <div className="space-y-4 sm:space-y-5">
-                      <h3
-                        className="text-md sm:text-lg font-medium mb-2"
-                        style={{ color: "var(--primary-color)" }}
-                      >
-                        Personal Information
-                      </h3>
-
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-2"
-                          style={{ color: "var(--primary-color)" }}
-                        >
-                          Full Name
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <User
-                              size={18}
-                              style={{ color: "var(--primary-color)" }}
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            value={formData.full_name}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                full_name: e.target.value,
-                              })
-                            }
-                            className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
-                            style={{ borderColor: "var(--primary-color)" }}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-2"
-                          style={{ color: "var(--primary-color)" }}
-                        >
-                          Phone Number
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Phone
-                              size={18}
-                              style={{ color: "var(--primary-color)" }}
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            value={formData.phone_number}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                phone_number: e.target.value,
-                              })
-                            }
-                            className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
-                            style={{ borderColor: "var(--primary-color)" }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right column - Password */}
-                    <div className="space-y-4 sm:space-y-5 mt-4 md:mt-0">
-                      <h3
-                        className="text-md sm:text-lg font-medium mb-2"
-                        style={{ color: "var(--primary-color)" }}
-                      >
-                        Change Password
-                      </h3>
-
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-2"
-                          style={{ color: "var(--primary-color)" }}
-                        >
-                          Current Password
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Key
-                              size={18}
-                              style={{ color: "var(--primary-color)" }}
-                            />
-                          </div>
-                          <input
-                            type="password"
-                            value={formData.old_password}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                old_password: e.target.value,
-                              })
-                            }
-                            className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
-                            style={{ borderColor: "var(--primary-color)" }}
-                            placeholder="Enter current password"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-2"
-                          style={{ color: "var(--primary-color)" }}
-                        >
-                          New Password
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Key
-                              size={18}
-                              style={{ color: "var(--primary-color)" }}
-                            />
-                          </div>
-                          <input
-                            type="password"
-                            value={formData.new_password}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                new_password: e.target.value,
-                              })
-                            }
-                            className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
-                            style={{ borderColor: "var(--primary-color)" }}
-                            placeholder="Enter new password"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                  <div className="flex justify-between items-center mb-3 sm:mb-4">
+                    <h2
+                      className="text-lg sm:text-xl font-medium"
+                      style={{ color: "var(--primary-color)" }}
+                    >
+                      Profile Information
+                    </h2>
+                    <button
+                      onClick={toggleEditMode}
+                      className="flex items-center justify-center p-2 rounded-lg transition-all duration-200"
+                      style={{
+                        backgroundColor: editMode
+                          ? "gray"
+                          : "var(--secondary-color)",
+                        color: "white",
+                      }}
+                    >
+                      {editMode ? (
+                        <>
+                          <X size={18} className="mr-1" />
+                          Cancel
+                        </>
+                      ) : (
+                        <>
+                          <Edit size={18} className="mr-1" />
+                          Edit
+                        </>
+                      )}
+                    </button>
                   </div>
 
-                  <button
-                    onClick={updateDriverInfo}
-                    className="w-full py-2 sm:py-3 mt-5 sm:mt-6 rounded-lg font-medium text-white transition-all duration-200"
-                    style={{ backgroundColor: "var(--secondary-color)" }}
-                  >
-                    Save Changes
-                  </button>
+                  {/* Edit Mode Form */}
+                  {editMode ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                      {/* Left column - Personal info */}
+                      <div className="space-y-4 sm:space-y-5">
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-2"
+                            style={{ color: "var(--primary-color)" }}
+                          >
+                            Full Name
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <User
+                                size={18}
+                                style={{ color: "var(--primary-color)" }}
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              value={formData.full_name}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  full_name: e.target.value,
+                                })
+                              }
+                              className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
+                              style={{ borderColor: "var(--primary-color)" }}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-2"
+                            style={{ color: "var(--primary-color)" }}
+                          >
+                            Phone Number
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Phone
+                                size={18}
+                                style={{ color: "var(--primary-color)" }}
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              value={formData.phone_number}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  phone_number: e.target.value,
+                                })
+                              }
+                              className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
+                              style={{ borderColor: "var(--primary-color)" }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right column - Password */}
+                      <div className="space-y-4 sm:space-y-5 mt-4 md:mt-0">
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-2"
+                            style={{ color: "var(--primary-color)" }}
+                          >
+                            Current Password
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Key
+                                size={18}
+                                style={{ color: "var(--primary-color)" }}
+                              />
+                            </div>
+                            <input
+                              type="password"
+                              value={formData.old_password}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  old_password: e.target.value,
+                                })
+                              }
+                              className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
+                              style={{ borderColor: "var(--primary-color)" }}
+                              placeholder="Enter current password"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-2"
+                            style={{ color: "var(--primary-color)" }}
+                          >
+                            New Password
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Key
+                                size={18}
+                                style={{ color: "var(--primary-color)" }}
+                              />
+                            </div>
+                            <input
+                              type="password"
+                              value={formData.new_password}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  new_password: e.target.value,
+                                })
+                              }
+                              className="w-full py-2 sm:py-3 pl-10 pr-3 border rounded-lg"
+                              style={{ borderColor: "var(--primary-color)" }}
+                              placeholder="Enter new password"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={updateDriverInfo}
+                        className="w-full md:col-span-2 py-2 sm:py-3 mt-4 rounded-lg font-medium text-white transition-all duration-200 flex items-center justify-center"
+                        style={{ backgroundColor: "var(--secondary-color)" }}
+                      >
+                        <Save size={18} className="mr-2" />
+                        Save Changes
+                      </button>
+                    </div>
+                  ) : (
+                    /* Non-edit mode - Just show basic info without fields */
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="mb-1 text-gray-500 text-sm">
+                        You can edit your profile information by clicking the
+                        Edit button.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
