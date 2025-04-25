@@ -4,7 +4,6 @@ const { Op } = require("sequelize");
 const searchBus = async (req, res) => {
   try {
     const { from, to, searchType } = req.body;
-    console.log("Received data:", req.body);
 
     if (!from || !to || !searchType) {
       return res.status(400).json({ message: "Invalid search parameters" });
@@ -67,9 +66,6 @@ const searchBus = async (req, res) => {
 const addNewBus = async (req, res) => {
   const { seats, area } = req.body;
   const imageFile = req.file;
-
-  console.log("Incoming body:", req.body);
-  console.log("Incoming file:", req.file);
 
   if (!seats || !area || !imageFile) {
     return res

@@ -10,6 +10,6 @@ router.post("/paycash", checkoutController);
 router.post("/paypaypal", checkoutController);
 router.post("/create-stripe-session", stripeController);
 
-router.get("/invoice/:bookingId", getInvoiceById);
+router.post("/invoice/:bookingId", getInvoiceById);
 
 module.exports = router;

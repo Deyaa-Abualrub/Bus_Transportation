@@ -55,13 +55,14 @@ const Booking = sequelize.define(
   }
 );
 
+Booking.belongsTo(User, { foreignKey: "user_id" });
+
+module.exports = Booking;
+
 // Booking.belongsTo(Bus, {
 //   foreignKey: "bus_number", // العمود في جدول Booking الذي يحوي القيمة
 //   targetKey: "bus_number", // العمود في جدول Bus الذي نقارن به
 // });
-
-// Booking.belongsTo(User, { foreignKey: "user_id" });
-module.exports = Booking;
 
 // departure_location: {
 //   type: DataTypes.STRING(255),

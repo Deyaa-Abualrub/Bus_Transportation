@@ -1,6 +1,6 @@
-
 const Booking = require("../models/Booking");
 const Bus = require("../models/Buses");
+const User = require("../models/User");
 const stripe = require("stripe")(process.env.SECRET_STRIPE);
 
 const checkoutController = async (req, res) => {
@@ -83,7 +83,8 @@ const checkoutController = async (req, res) => {
 
 const stripeController = async (req, res) => {
   try {
-    const { busRoute, busNumber, price, seatAvailable, userId, seatNumber } = req.body;
+    const { busRoute, busNumber, price, seatAvailable, userId, seatNumber } =
+      req.body;
 
     // Save booking first (payment is considered done)
     await Booking.create({
@@ -128,20 +129,42 @@ const stripeController = async (req, res) => {
 
 const getInvoiceById = async (req, res) => {
   const { bookingId } = req.params;
+  const { from, to, searchType } = req.body;
+
+  console.log("Search parameters:", req.body);
+
+  if (!from || !to || !searchType) {
+    return res.status(400).json({ message: "Invalid search parameters" });
+  }
 
   try {
+    // First, get the booking with user information
     const booking = await Booking.findOne({
       where: { booking_id: bookingId },
       include: [
-        {
-          model: User,
-          attributes: ["full_name"],
-        },
+        { model: User, attributes: ["full_name"] },
       ],
     });
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Now get the bus information using bus_number from booking
+    const bus = await Bus.findOne({
+      where: { bus_number: booking.bus_number },
+    });
+
+    if (!bus) {
+      return res.status(404).json({ message: "Bus information not found" });
+    }
+
+    // Determine which time field to use based on searchType
+    let timeValue;
+    if (searchType === "launch_date") {
+      timeValue = bus.launch_date;
+    } else if (searchType === "status_change_time") {
+      timeValue = bus.status_change_time;
     }
 
     const invoiceData = {
@@ -152,6 +175,9 @@ const getInvoiceById = async (req, res) => {
       payment_method: booking.payment_method,
       total_price: booking.total_price,
       created_at: booking.created_at,
+      time: timeValue,
+      from: from,
+      to: to
     };
 
     res.status(200).json(invoiceData);
@@ -161,4 +187,4 @@ const getInvoiceById = async (req, res) => {
   }
 };
 
-module.exports = { checkoutController, stripeController , getInvoiceById };
+module.exports = { checkoutController, stripeController, getInvoiceById };

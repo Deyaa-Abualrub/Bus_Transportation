@@ -1,19 +1,34 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CreditCard, Bus, CalendarDays, Clock, User } from "lucide-react";
+import {
+  CreditCard,
+  Bus,
+  CalendarDays,
+  Clock,
+  User,
+  MapPin,
+} from "lucide-react";
+import { useSelector } from "react-redux";
 
 const Invoice = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { from, to, searchType } = useSelector((state) => state.bookingForm);
 
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:4000/bus/invoice/${bookingId}`
+        // Make sure we're sending the required data in the request body
+        const res = await axios.post(
+          `http://localhost:4000/bus/invoice/${bookingId}`,
+          {
+            from,
+            to,
+            searchType,
+          }
         );
         setBooking(res.data);
       } catch (err) {
@@ -24,7 +39,7 @@ const Invoice = () => {
     };
 
     fetchBooking();
-  }, [bookingId]);
+  }, [bookingId, from, to, searchType]);
 
   if (loading)
     return (
@@ -65,6 +80,14 @@ const Invoice = () => {
           </div>
 
           <div className="flex items-center">
+            <MapPin className="mr-2 text-[var(--secondary-color)]" size={20} />
+            <span className="font-medium">Route:</span>
+            <span className="ml-2 font-semibold text-black">
+              {booking.from} to {booking.to}
+            </span>
+          </div>
+
+          <div className="flex items-center">
             <span className="font-medium">Seats:</span>
             <span className="ml-2 font-semibold text-black">
               {booking.seat_number}
@@ -95,12 +118,21 @@ const Invoice = () => {
 
           <div className="flex items-center">
             <Clock className="mr-2 text-[var(--secondary-color)]" size={20} />
-            <span className="font-medium">Time:</span>
+            <span className="font-medium">Departure Time:</span>
             <span className="ml-2 font-semibold text-black">
-              {new Date(booking.created_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {booking.time
+                ? new Date(booking.time).toLocaleString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "Time not available"}
+            </span>
+            <span className="ml-2 text-xs text-gray-500">
+              (
+              {searchType === "launch_date"
+                ? "Launch Time"
+                : "Status Change Time"}
+              )
             </span>
           </div>
 
