@@ -131,7 +131,6 @@ const getInvoiceById = async (req, res) => {
   const { bookingId } = req.params;
   const { from, to, searchType } = req.body;
 
-  console.log("Search parameters:", req.body);
 
   if (!from || !to || !searchType) {
     return res.status(400).json({ message: "Invalid search parameters" });

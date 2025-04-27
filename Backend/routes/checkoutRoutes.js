@@ -12,4 +12,5 @@ router.post("/create-stripe-session", stripeController);
 
 router.post("/invoice/:bookingId", getInvoiceById);
 
+
 module.exports = router;

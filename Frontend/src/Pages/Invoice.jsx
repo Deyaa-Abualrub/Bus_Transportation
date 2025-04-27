@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  CreditCard,
-  Bus,
-  User,
-  Receipt,
-  ArrowLeft,
-} from "lucide-react";
+import { CreditCard, Bus, User, Receipt, ArrowLeft } from "lucide-react";
 import { useSelector } from "react-redux";
 
 const Invoice = () => {
@@ -29,6 +23,7 @@ const Invoice = () => {
           }
         );
         setBooking(res.data);
+        localStorage.setItem("bookingId", bookingId);
       } catch (err) {
         console.error("Failed to fetch invoice:", err);
       } finally {

@@ -233,7 +233,7 @@ const SearchBus = () => {
               {/* View Seats Button */}
               <div className="view-seats flex justify-center items-center mt-4 lg:mt-0 lg:ml-4">
                 <button
-                  onClick={() => handleBooking(bus)} // هنا نضيف الـ dispatch
+                  onClick={() => handleBooking(bus)} 
                   className="w-full lg:w-auto bg-[var(--primary-color)] hover:bg-[var(--secondary-color)] text-white py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
                 >
                   <span>Booking Now</span>
