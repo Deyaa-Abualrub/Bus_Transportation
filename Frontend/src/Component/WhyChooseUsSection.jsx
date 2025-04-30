@@ -3,14 +3,14 @@ import waiting_bus from "../assets/waiting_bus.jpg";
 export default function WhyChooseUsSection() {
   return (
     <section className="flex justify-center items-center py-8 mb-16">
-      <div className="flex max-w-screen-xl gap-1 flex-col gap-5 sm:flex-row sm:gap-1">
+      <div className="flex max-w-screen-xl gap-1 flex-col sm:flex-row sm:gap-5">
         <div className="relative flex-1 sm:mb-12">
           <img
             src={waiting_bus}
             alt="Bus Travelers"
             className="w-full rounded-xl"
           />
-          <div className="absolute bottom-[-100px] left-10 bg-gray-800 text-white p-6 rounded-md max-w-[400px] ">
+          <div className="absolute bottom-[-80px] left-10 bg-gray-800 text-white p-6 rounded-md max-w-[400px] sm:bottom-[-100px]">
             <h3 className="text-xl font-semibold mb-2">
               Best Transport Service for Al-Hashamieh University
             </h3>
@@ -37,7 +37,7 @@ export default function WhyChooseUsSection() {
             destination on time.
           </p>
 
-          <div className="flex gap-8 mt-8 justify-around">
+          <div className="flex gap-8 mt-8 justify-around sm:justify-start sm:gap-12">
             <div className="text-center">
               <span className="text-4xl text-red-600">🚌</span>
               <h3 className="text-3xl mt-2">30 +</h3>

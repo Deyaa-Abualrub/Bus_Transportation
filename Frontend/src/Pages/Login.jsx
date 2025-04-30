@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Toaster, toast } from "react-hot-toast"; // ← تعديل هون
+import { Toaster, toast } from "react-hot-toast"; 
 import { User, Mail, Lock } from "react-feather";
 import lr_video from "../assets/lr-video.mp4";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/checkoutSlice";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import {  GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -51,7 +51,7 @@ const Login = () => {
       );
 
       const { token, user } = res.data;
-      localStorage.setItem("authtoken", token);
+      localStorage.setItem("authToken", token);
       localStorage.setItem("user", user.full_name);
       localStorage.setItem("user_id", user.user_id);
 
@@ -83,7 +83,7 @@ const Login = () => {
       );
 
       const { token, user } = res.data;
-      localStorage.setItem("authtoken", token);
+      localStorage.setItem("authToken", token);
       localStorage.setItem("user", user.full_name);
       localStorage.setItem("user_id", user.user_id);
 
@@ -104,8 +104,37 @@ const Login = () => {
     setLoading(false);
   };
 
+  const handleGoogleSignIn = async (response) => {
+    if (response.error) {
+      toast.error("Google Sign-In failed");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { credential } = response;
+      const res = await axios.post(
+        "http://localhost:4000/auth/google",
+        { token: credential },
+        { withCredentials: true } 
+      );
+      toast.success("Logged in successfully!");
+      // await loadUser(); 
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+
+
   return (
-    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+    <>
       <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
         <Toaster position="top-right" />
         <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
@@ -144,7 +173,7 @@ const Login = () => {
               </div>
 
               <GoogleLogin
-                onSuccess={handleLogin}
+                onSuccess={handleGoogleSignIn}
                 onError={() => toast.error("Google login failed")}
                 useOneTap
                 render={(renderProps) => (
@@ -260,7 +289,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </GoogleOAuthProvider>
+    </>
   );
 };
 

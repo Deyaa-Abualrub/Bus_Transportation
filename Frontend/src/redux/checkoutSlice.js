@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: {
-    user_id: null, // إضافة user_id
+    user_id: null, 
     username: "",
   },
   bus: {

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function ShuttleSection() {
   return (
     <section className="shuttle-container flex flex-col md:flex-row items-center justify-center py-16 gap-12 max-w-5xl mx-auto">
-      <div className="shuttle-content max-w-md">
+      <div className="shuttle-content max-w-md text-center md:text-left">
         <h4 className="title text-primary text-lg font-bold mb-2">
           University Shuttle Service
         </h4>
@@ -44,7 +44,7 @@ export default function ShuttleSection() {
         </button>
       </div>
 
-      <div className="shuttle-images relative max-w-md">
+      <div className="shuttle-images relative max-w-md mt-8 md:mt-0">
         <div className="main-image-wrapper relative rounded-lg overflow-hidden">
           <img
             src={about_photo}
@@ -57,11 +57,11 @@ export default function ShuttleSection() {
             <p className="font-bold text-black">Years of Service</p>
           </div>
         </div>
-        <div className="overlay-wrapper absolute top-1/2 transform -translate-y-1/2 right-[-30px] border-4 border-white rounded-lg overflow-hidden shadow-md">
+        <div className="overlay-wrapper absolute top-1/2 transform -translate-y-1/2 right-0 lg:right-[-20px] border-4 border-white rounded-lg overflow-hidden shadow-md">
           <img
             src={about_photo_small}
             alt="Passenger in Bus"
-            className="overlay-image w-[150px] rounded-lg"
+            className="overlay-image w-[120px] md:w-[150px] rounded-lg"
           />
         </div>
       </div>

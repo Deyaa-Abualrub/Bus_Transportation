@@ -96,31 +96,26 @@ export default function TestimonialsSection() {
     >
       <div className="absolute inset-0 bg-black opacity-60 z-0"></div>
 
-      <div className="relative z-10">
-        <p className="text-white font-semibold text-lg">Our Testimonial</p>
-        <h2 className="text-4xl text-white mt-2">
-          What Our{" "}
-          <span style={{ color: colors.secondary, fontWeight: "bold" }}>
-            Clients
-          </span>{" "}
-          Say
+      <div className="relative z-10 text-white px-4 md:px-12 lg:px-24">
+        <p className="font-semibold text-lg">Our Testimonial</p>
+        <h2 className="text-4xl mt-2">
+          What Our <span className="text-red-600 font-bold">Clients</span> Say
         </h2>
-        <p className="text-white mt-4 max-w-xl mx-auto">
+        <p className="mt-4 max-w-xl mx-auto">
           Real feedback from our valued customers who have experienced our
           services firsthand.
         </p>
 
-        <div className="testimonials flex justify-center gap-6 mt-12 px-4">
+        <div className="testimonials flex justify-center gap-6 mt-12 flex-wrap">
           {isLoading ? (
-            <p className="text-white">Loading...</p>
+            <p>Loading...</p>
           ) : (
             getVisibleTestimonials().map((testimonial, index) => (
               <div
                 key={testimonial.testimonial_id}
                 className={`testimonial-card p-6 rounded-lg w-80 shadow-lg text-left transition-transform duration-300 ${
                   index === 1 ? "scale-110 z-20" : "scale-95 opacity-80"
-                }`}
-                style={{ backgroundColor: colors.third, color: colors.primary }}
+                } bg-[#e8dbb1c8] text-[#1f2937]`}
               >
                 {/* صورة المستخدم + الاسم */}
                 <div className="profile flex items-center mb-4">
@@ -148,33 +143,22 @@ export default function TestimonialsSection() {
 
         <button
           onClick={() => setShowForm(true)}
-          className="mt-10 px-8 py-3 rounded-lg transition-colors font-semibold shadow-md"
-          style={{ backgroundColor: colors.secondary, color: "white" }}
+          className="mt-10 px-8 py-3 rounded-lg transition-colors font-semibold shadow-md bg-red-600 text-white"
         >
           Add Your Testimonial
         </button>
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
-            <div
-              className="p-8 rounded-lg w-96 max-w-full mx-4 shadow-2xl relative"
-              style={{
-                backgroundColor: "white",
-                borderTop: `4px solid ${colors.secondary}`,
-              }}
-            >
+            <div className="p-8 rounded-lg w-96 max-w-full mx-4 shadow-2xl relative bg-white border-t-4 border-red-600">
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="absolute top-4 right-4 text-2xl font-bold"
-                style={{ color: colors.primary }}
+                className="absolute top-4 right-4 text-2xl font-bold text-[#1f2937]"
               >
                 ×
               </button>
-              <h3
-                className="text-2xl mb-6 font-bold text-center"
-                style={{ color: colors.primary }}
-              >
+              <h3 className="text-2xl mb-6 font-bold text-center text-[#1f2937]">
                 Share Your Experience
               </h3>
 
@@ -187,12 +171,7 @@ export default function TestimonialsSection() {
                     onChange={handleInputChange}
                     required
                     rows="4"
-                    className="w-full p-3 border rounded-lg"
-                    style={{
-                      borderColor: colors.third,
-                      backgroundColor: "#f9f7f1",
-                      color: colors.primary,
-                    }}
+                    className="w-full p-3 border rounded-lg border-[#e8dbb1c8] bg-[#f9f7f1] text-[#1f2937]"
                   ></textarea>
                 </div>
 
@@ -214,7 +193,7 @@ export default function TestimonialsSection() {
                           style={{
                             color:
                               parseInt(formData.rating) >= star
-                                ? colors.secondary
+                                ? "#fb2c36"
                                 : "#d1d5db",
                           }}
                         />
@@ -225,8 +204,7 @@ export default function TestimonialsSection() {
 
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-lg transition-colors w-full font-semibold mt-6"
-                  style={{ backgroundColor: colors.primary, color: "white" }}
+                  className="px-6 py-3 rounded-lg transition-colors w-full font-semibold mt-6 bg-[#1f2937] text-white"
                 >
                   Submit Testimonial
                 </button>
