@@ -3,7 +3,8 @@ const { Op } = require("sequelize");
 
 const searchBus = async (req, res) => {
   try {
-    const { from, to, searchType } = req.body;
+    const { from, to, searchType, page = 1 } = req.body;
+    const busesPerPage = 6;
 
     if (!from || !to || !searchType) {
       return res.status(400).json({ message: "Invalid search parameters" });
@@ -17,7 +18,7 @@ const searchBus = async (req, res) => {
 
     let buses;
     if (from === "hu") {
-      buses = await Bus.findAll({
+      buses = await Bus.findAndCountAll({
         where: {
           bus_route: to,
           status: 3,
@@ -30,9 +31,11 @@ const searchBus = async (req, res) => {
           "status_change_time",
           "bus_image",
         ],
+        limit: busesPerPage,
+        offset: (page - 1) * busesPerPage,
       });
     } else {
-      buses = await Bus.findAll({
+      buses = await Bus.findAndCountAll({
         where: {
           bus_route: from,
           status: 1,
@@ -45,16 +48,24 @@ const searchBus = async (req, res) => {
           "launch_date",
           "bus_image",
         ],
+        limit: busesPerPage,
+        offset: (page - 1) * busesPerPage,
       });
     }
 
-    if (buses.length === 0) {
+    if (buses.rows.length === 0) {
       return res
         .status(404)
         .json({ message: "No buses found for the selected route" });
     }
 
-    res.status(200).json(buses);
+    // Calculate total pages based on count of buses
+    const totalPages = Math.ceil(buses.count / busesPerPage);
+
+    res.status(200).json({
+      buses: buses.rows,
+      totalPages: totalPages,
+    });
   } catch (error) {
     console.error(error);
     res

@@ -8,64 +8,44 @@ import { toast } from "react-hot-toast";
 
 const SearchBus = () => {
   const [buses, setBuses] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const { from, to, searchType } = useSelector((state) => state.bookingForm);
-  // const [isAuthenticated, setIsAuthenticated] = useState(true);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const fetchBuses = async (page = 1) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/bus/searchbus",
+        {
+          from,
+          to,
+          searchType,
+          page,
+          limit: 6, // We limit the results to 6 buses per page
+        },
+        { withCredentials: true }
+      );
+      setBuses(response.data.buses);
+      setTotalPages(response.data.totalPages); // This should come from the backend
+    } catch (error) {
+      console.error("Error fetching buses:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchBuses = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:4000/bus/searchbus",
-          {
-            from,
-            to,
-            searchType,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-        setBuses(response.data);
-      } catch (error) {
-        console.error("Error fetching buses:", error);
-      }
-    };
+    if (from && to) {
+      fetchBuses(currentPage);
+    }
+  }, [from, to, searchType, currentPage]);
 
-    fetchBuses();
-  }, [from, to, searchType]);
-
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     try {
-  //       const res = await axios.get("http://localhost:4000/bus/check", {
-  //         withCredentials: true,
-  //       });
-
-  //       if (res.status !== 200) throw new Error();
-  //       setIsAuthenticated(true);
-  //     } catch (err) {
-  //       setIsAuthenticated(false);
-  //     }
-  //   };
-
-  //   checkAuth();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     toast.error("Please sign in to continue.");
-  //     navigate("/signin");
-  //   }
-  // }, [isAuthenticated, navigate]);
   const handleBooking = async (bus) => {
     try {
       const res = await axios.get("http://localhost:4000/bus/check", {
         withCredentials: true,
       });
-  
+
       if (res.status === 200) {
         dispatch(
           setBusDetails({
@@ -82,7 +62,63 @@ const SearchBus = () => {
       navigate("/signin");
     }
   };
-  
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top when changing page
+  };
+
+  // Function to generate page numbers to display
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5; // Maximum number of page buttons to show
+
+    if (totalPages <= maxPagesToShow) {
+      // If total pages are less than or equal to maxPagesToShow, show all pages
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Always include first page
+      pageNumbers.push(1);
+
+      // Calculate start and end of the middle section
+      let startPage = Math.max(2, currentPage - 1);
+      let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+      // Adjust if we're near the beginning
+      if (currentPage <= 3) {
+        endPage = Math.min(maxPagesToShow - 1, totalPages - 1);
+      }
+
+      // Adjust if we're near the end
+      if (currentPage >= totalPages - 2) {
+        startPage = Math.max(2, totalPages - (maxPagesToShow - 2));
+      }
+
+      // Add ellipsis after first page if needed
+      if (startPage > 2) {
+        pageNumbers.push("...");
+      }
+
+      // Add middle pages
+      for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+      }
+
+      // Add ellipsis before last page if needed
+      if (endPage < totalPages - 1) {
+        pageNumbers.push("...");
+      }
+
+      // Always include last page
+      if (totalPages > 1) {
+        pageNumbers.push(totalPages);
+      }
+    }
+
+    return pageNumbers;
+  };
 
   return (
     <div className="container-bus p-6 sm:p-8 rounded-xl shadow-lg mx-auto my-8 w-11/12 sm:w-4/5 border border-gray-100 bg-gradient-to-r from-white to-[var(--third-color)] bg-opacity-30">
@@ -95,8 +131,10 @@ const SearchBus = () => {
       </div>
 
       {/* Booking Form */}
-      <div className="mb-8">
-        <BookingForm />
+      <div className="flex justify-center items-center">
+        <div className="max-w-4xl mb-8">
+          <BookingForm />
+        </div>
       </div>
 
       {/* Bus Cards */}
@@ -125,21 +163,21 @@ const SearchBus = () => {
             </button>
           </div>
         ) : (
-          Array.isArray(buses) &&
           buses.map((bus, index) => (
             <div
               key={index}
               className="bus-card flex flex-col lg:flex-row p-5 rounded-xl shadow-md border-l-4 border-[var(--primary-color)] hover:shadow-lg transition-all duration-300 bg-gradient-to-l from-white to-[var(--third-color)] bg-opacity-80"
             >
-              {/* Bus Image with status badge */}
               <div className="relative mb-4 lg:mb-0 lg:mr-6 max-w-full">
-                <img
-                  src={
-                    "https://themeenergy.com/themes/html/transfers/images/uploads/bus.jpg"
-                  }
-                  alt="Bus"
-                  className="bus-image w-full lg:w-48 h-40 object-cover rounded-md shadow-md"
-                />
+                <div className="w-full h-36 sm:h-44 rounded-md shadow-md">
+                  <img
+                    src={
+                      "https://themeenergy.com/themes/html/transfers/images/uploads/bus.jpg"
+                    }
+                    alt="Bus"
+                    className="w-full h-full object-contain rounded-md"
+                  />
+                </div>
                 <div className="absolute top-2 right-2 bg-[var(--secondary-color)] text-white text-xs px-2 py-1 rounded-full">
                   Available
                 </div>
@@ -233,7 +271,7 @@ const SearchBus = () => {
               {/* View Seats Button */}
               <div className="view-seats flex justify-center items-center mt-4 lg:mt-0 lg:ml-4">
                 <button
-                  onClick={() => handleBooking(bus)} 
+                  onClick={() => handleBooking(bus)}
                   className="w-full lg:w-auto bg-[var(--primary-color)] hover:bg-[var(--secondary-color)] text-white py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
                 >
                   <span>Booking Now</span>
@@ -255,6 +293,88 @@ const SearchBus = () => {
           ))
         )}
       </div>
+
+      {/* Enhanced Pagination - Only shows when there are multiple pages */}
+      {totalPages > 1 && (
+        <div className="pagination my-8 flex flex-wrap justify-center items-center">
+          {/* Previous Button */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`flex items-center px-3 py-2 mr-2 rounded-md transition-all duration-300 ${
+              currentPage === 1
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-[var(--secondary-color)] text-white hover:bg-[var(--primary-color)]"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex space-x-2">
+            {getPageNumbers().map((page, index) =>
+              page === "..." ? (
+                <span key={`ellipsis-${index}`} className="px-3 py-2">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={`page-${page}`}
+                  onClick={() => page !== currentPage && handlePageChange(page)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
+                    page === currentPage
+                      ? "bg-[var(--primary-color)] text-white font-bold shadow-md"
+                      : "bg-white border border-gray-200 hover:bg-[var(--third-color)] hover:text-[var(--secondary-color)]"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`flex items-center px-3 py-2 ml-2 rounded-md transition-all duration-300 ${
+              currentPage === totalPages
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-[var(--secondary-color)] text-white hover:bg-[var(--primary-color)]"
+            }`}
+          >
+            <span className="hidden sm:inline">Next</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 ml-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
