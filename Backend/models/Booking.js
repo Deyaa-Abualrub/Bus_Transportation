@@ -55,6 +55,12 @@ const Booking = sequelize.define(
   }
 );
 
+Booking.belongsTo(Bus, {
+  foreignKey: "bus_number",
+  targetKey: "bus_number",
+  as: "bus",
+});
+
 Booking.belongsTo(User, { foreignKey: "user_id" });
 
 module.exports = Booking;

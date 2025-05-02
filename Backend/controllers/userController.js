@@ -2,6 +2,7 @@ const Joi = require("joi");
 const User = require("../models/User");
 const Booking = require("../models/Booking");
 const Testimonial = require("../models/Testimonials");
+const Bus = require("../models/Buses");
 const sequelize = require("../config/database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -68,10 +69,10 @@ const signup = async (req, res) => {
       message: "Signup successful",
       token,
       user: {
-        user_id: newUser.user_id, 
+        user_id: newUser.user_id,
         full_name: newUser.full_name,
         email: newUser.email,
-        role: newUser.role, 
+        role: newUser.role,
       },
     });
   } catch (error) {
@@ -196,9 +197,27 @@ const getUserBookings = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const offset = (page - 1) * limit;
+    const region = req.query.region;
+
+    console.log("Fetching bookings for user:", user_id, "region:", region);
+
+    const whereClause = { user_id };
+
+    const includeOptions = [
+      {
+        model: Bus,
+        as: "bus",
+        attributes: ["bus_number", "bus_route"],
+      },
+    ];
+
+    if (region) {
+      includeOptions[0].where = { bus_route: region };
+    }
 
     const { count, rows } = await Booking.findAndCountAll({
-      where: { user_id },
+      where: whereClause,
+      include: includeOptions,
       limit,
       offset,
       order: [["created_at", "DESC"]],
@@ -212,12 +231,12 @@ const getUserBookings = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching bookings", error: error.message });
+    res.status(500).json({
+      message: "Error fetching bookings",
+      error: error.message,
+    });
   }
 };
-
 
 const getUserTestimonials = async (req, res) => {
   try {
@@ -246,7 +265,6 @@ const getUserTestimonials = async (req, res) => {
       .json({ message: "Error fetching testimonials", error: error.message });
   }
 };
-
 
 module.exports = {
   signup,
