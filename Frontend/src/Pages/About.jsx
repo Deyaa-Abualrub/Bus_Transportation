@@ -8,7 +8,8 @@ export default function About() {
         {/* Text Content */}
         <div className="max-w-full lg:max-w-[60%] mb-6 lg:mb-0">
           <h1 className="font-bold text-4xl leading-[42px] tracking-tight mb-6 mt-4">
-            Welcome to <span className="text-primary">Hashemite University</span>{" "}
+            Welcome to{" "}
+            <span className="text-primary">Hashemite University</span>{" "}
             Transportation Services
           </h1>
 
@@ -57,21 +58,21 @@ export default function About() {
         </div>
 
         {/* Info Content */}
-        <div className="flex flex-col items-center lg:items-start gap-[30px]">
+        <div className="flex flex-col md:flex-row lg:flex-col items-center justify-center text-center gap-6 md:gap-8 lg:gap-[30px]">
           {/* Image Content */}
-          <div className="transform rotate-6 mb-12 lg:mb-0">
+          <div className="mb-4 md:mb-0 lg:mb-6">
             <img
               src={about_page}
               alt="University Shuttle"
-              className="w-[250px] transform rotate-6 rounded-lg"
+              className="w-[250px] rounded-lg mx-auto lg:rotate-6" // Apply rotate ONLY on lg screens, not on tablet/md
             />
           </div>
 
           {/* Social Links */}
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-3 items-start md:items-start">
             <a
-              href="#"
-              className="group flex items-center text-gray-700 hover:text-gray-900 transition-colors duration-200"
+              href="https://web.facebook.com/dyaaabualrub/"
+              className="group flex items-center justify-start text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >
               <Facebook className="w-5 h-5 mr-3" />
               <span className="text-sm font-medium group-hover:text-gray-900">
@@ -79,8 +80,8 @@ export default function About() {
               </span>
             </a>
             <a
-              href="#"
-              className="group flex items-center text-gray-700 hover:text-gray-900 transition-colors duration-200"
+              href="https://www.instagram.com/dyaa.abualrub/"
+              className="group flex items-center justify-start text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >
               <Instagram className="w-5 h-5 mr-3" />
               <span className="text-sm font-medium group-hover:text-gray-900">
@@ -88,8 +89,8 @@ export default function About() {
               </span>
             </a>
             <a
-              href="#"
-              className="group flex items-center text-gray-700 hover:text-gray-900 transition-colors duration-200"
+              href="https://github.com/Deyaa-Abualrub?tab=repositories"
+              className="group flex items-center justify-start text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >
               <Github className="w-5 h-5 mr-3" />
               <span className="text-sm font-medium group-hover:text-gray-900">
@@ -97,15 +98,16 @@ export default function About() {
               </span>
             </a>
             <a
-              href="#"
-              className="group flex items-center text-gray-700 hover:text-gray-900 transition-colors duration-200"
+              href="https://www.linkedin.com/in/deyaaabualrub/"
+              className="group flex  justify-start text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >
               <Linkedin className="w-5 h-5 mr-3" />
               <span className="text-sm font-medium group-hover:text-gray-900">
                 Follow Us on LinkedIn
               </span>
             </a>
-            <div className="flex items-center text-gray-700 pt-3 border-t border-gray-200">
+
+            <div className="flex items-center justify-start text-gray-700 pt-1 border-t border-gray-500 w-full">
               <Mail className="w-5 h-5 mr-3" />
               <span className="text-sm font-medium">
                 transportation@hu.edu.jo

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import client_section from "../assets/client_section.jpg";
 import { FaUserCircle, FaStar } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
 export default function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState([]);
@@ -25,7 +26,7 @@ export default function TestimonialsSection() {
       setVisibleIndex((prev) =>
         testimonials.length > 0 ? (prev + 1) % testimonials.length : 0
       );
-    }, 5000); // كل 5 ثوانٍ
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [testimonials]);
@@ -56,12 +57,12 @@ export default function TestimonialsSection() {
         user_id: userId,
       });
 
-      alert("Thank you! Your testimonial is submitted for review.");
+      toast.success("Thank you! Your testimonial has been submitted.");
       setShowForm(false);
       setFormData({ message: "", rating: 0 });
       fetchTestimonials();
     } catch (err) {
-      alert("Failed to submit testimonial.");
+      toast.error("Failed to submit testimonial.");
       console.error(err);
     } finally {
       setIsLoading(false);

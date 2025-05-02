@@ -218,7 +218,7 @@ const Checkout = () => {
             <h3 className="text-xl font-bold text-[var(--primary-color)] mb-4">
               Select Seats
             </h3>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-lg bg-gray-50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 pb-0 rounded-lg bg-gray-50">
               <div className="w-full sm:w-1/2 mb-4 sm:mb-0">
                 <label className="block text-sm font-medium text-[var(--text-color)] mb-1">
                   Number of Seats
