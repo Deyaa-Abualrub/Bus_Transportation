@@ -12,6 +12,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { FaUserCircle, FaFileInvoice, FaCar, FaUser } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -80,72 +81,91 @@ export default function Navbar() {
   };
 
   const handleLoginClick = () => {
-    toast.info(
-      <div className="role-selection">
-        <p className="mb-2 font-medium">Select your role to login</p>
-        <div className="flex justify-center gap-4 mt-2">
-          <button
-            onClick={() => navigate("/signin")}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            <FaUser className="mr-2" /> User
+    Swal.fire({
+      title: "Login as",
+      html: `
+        <div class="flex justify-center gap-6 mt-4">
+          <!-- User Login Button -->
+          <button id="user-login-btn" class="flex items-center justify-center gap-3 bg-[#1f2937] text-white py-3 px-8 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 transform w-full sm:w-auto">
+            <i class="fas fa-user text-[#e8dbb1c8]"></i>
+            <span class="text-lg font-medium">User</span>
           </button>
-          <button
-            onClick={() => navigate("/driver-login")}
-            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
-            <FaCar className="mr-2" /> Driver
+          
+          <!-- Driver Login Button -->
+          <button id="driver-login-btn" class="flex items-center justify-center gap-3 bg-[#FB2C36] text-white py-3 px-8 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 transform w-full sm:w-auto">
+            <i class="fas fa-car text-[#e8dbb1c8]"></i>
+            <span class="text-lg font-medium">Driver</span>
           </button>
         </div>
-      </div>,
-      {
-        position: "top-center",
-        autoClose: 10000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      }
-    );
+      `,
+      showCancelButton: false,
+      showConfirmButton: false,
+      background: "#ffffff",
+      customClass: {
+        title: "text-[#1f2937] text-xl font-medium",
+        popup: "rounded-lg border border-gray-200 shadow-lg",
+      },
+      didOpen: () => {
+        document
+          .getElementById("user-login-btn")
+          .addEventListener("click", () => {
+            Swal.close();
+            navigate("/signin");
+          });
+        document
+          .getElementById("driver-login-btn")
+          .addEventListener("click", () => {
+            Swal.close();
+            navigate("/driver-login");
+          });
+      },
+    });
   };
 
   const handleRegisterClick = () => {
-    toast.info(
-      <div className="role-selection">
-        <p className="mb-2 font-medium">Select your role to register</p>
-        <div className="flex justify-center gap-4 mt-2">
-          <button
-            onClick={() => navigate("/signin")}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            <FaUser className="mr-2" /> User
+    Swal.fire({
+      title: "Register as",
+      html: `
+        <div class="flex justify-center gap-6 mt-4">
+          <!-- User Register Button -->
+          <button id="user-register-btn" class="flex items-center justify-center gap-3 bg-[#1f2937] text-white py-3 px-8 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 transform w-full sm:w-auto">
+            <i class="fas fa-user text-[#e8dbb1c8]"></i>
+            <span class="text-lg font-medium">User</span>
           </button>
-          <button
-            onClick={() => navigate("/driver-login")}
-            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
-            <FaCar className="mr-2" /> Driver
+          
+          <!-- Driver Register Button -->
+          <button id="driver-register-btn" class="flex items-center justify-center gap-3 bg-[#FB2C36] text-white py-3 px-8 rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 transform w-full sm:w-auto">
+            <i class="fas fa-car text-[#e8dbb1c8]"></i>
+            <span class="text-lg font-medium">Driver</span>
           </button>
         </div>
-      </div>,
-      {
-        position: "top-center",
-        autoClose: 10000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      }
-    );
+      `,
+      showCancelButton: false,
+      showConfirmButton: false,
+      background: "#ffffff",
+      customClass: {
+        title: "text-[#1f2937] text-xl font-medium",
+        popup: "rounded-lg border border-gray-200 shadow-lg",
+      },
+      didOpen: () => {
+        document
+          .getElementById("user-register-btn")
+          .addEventListener("click", () => {
+            Swal.close();
+            navigate("/signin");
+          });
+        document
+          .getElementById("driver-register-btn")
+          .addEventListener("click", () => {
+            Swal.close();
+            navigate("/driver-login");
+          });
+      },
+    });
   };
 
   const navigationLinks = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
-    { name: "Services", path: "/" },
     {
       name: "Invoice",
       action: () => {
@@ -158,12 +178,15 @@ export default function Navbar() {
         }
       },
     },
+    { name: "Services", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
   ];
 
   return (
     <>
       <ToastContainer position="top-center" />
-      <Disclosure as="nav" className="bg-gray-800 shadow-lg sticky top-0 z-50">
+      <Disclosure as="nav" className="bg-gray-800 shadow-lg sticky top-0 z-40">
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -219,13 +242,13 @@ export default function Navbar() {
                     <div className="hidden sm:flex items-center space-x-2">
                       <button
                         onClick={handleLoginClick}
-                        className="text-white text-sm md:text-base m-1 px-3 py-1.5 md:px-4 md:py-2 bg-[#eb2323] rounded-md hover:bg-red-700 transition duration-300"
+                        className="text-white text-sm md:text-base m-1 px-3 py-1.5 md:px-4 md:py-2 bg-[#fb2c36] rounded-md hover:bg-[#e1242d] transition duration-300"
                       >
                         Login
                       </button>
                       <button
                         onClick={handleRegisterClick}
-                        className="ml-1 md:ml-2 text-white text-sm md:text-base px-3 py-1.5 md:px-4 md:py-2 bg-[#eb2323] rounded-md hover:bg-red-700 transition duration-300"
+                        className="ml-1 md:ml-2 text-white text-sm md:text-base px-3 py-1.5 md:px-4 md:py-2 bg-[#fb2c36] rounded-md hover:bg-[#e1242d] transition duration-300"
                       >
                         Register
                       </button>
@@ -297,13 +320,13 @@ export default function Navbar() {
                   <div className="flex flex-col space-y-2 mb-3 border-b border-gray-700 pb-3">
                     <button
                       onClick={handleLoginClick}
-                      className="text-white text-base px-3 py-2 bg-[#eb2323] rounded-md hover:bg-red-700 transition duration-300 w-full text-center"
+                      className="text-white text-base px-3 py-2 bg-[#fb2c36] rounded-md hover:bg-[#e1242d] transition duration-300 w-full text-center"
                     >
                       Login
                     </button>
                     <button
                       onClick={handleRegisterClick}
-                      className="text-white text-base px-3 py-2 bg-[#eb2323] rounded-md hover:bg-red-700 transition duration-300 w-full text-center"
+                      className="text-white text-base px-3 py-2 bg-[#fb2c36] rounded-md hover:bg-[#e1242d] transition duration-300 w-full text-center"
                     >
                       Register
                     </button>

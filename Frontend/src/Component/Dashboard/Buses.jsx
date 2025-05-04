@@ -49,28 +49,29 @@ const BusesPage = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       <Sidebar />
+
       <div
-        className="flex-1 overflow-auto p-6"
+        className="flex-1 p-4 sm:p-6 w-full"
         style={{ backgroundColor: "var(--third-color)" }}
       >
-        <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div className="flex items-center mb-4 md:mb-0">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center">
             <Bus
               size={28}
               className="text-white p-1 rounded-md mr-3"
               style={{ backgroundColor: "var(--secondary-color)" }}
             />
             <h1
-              className="text-2xl font-bold"
+              className="text-xl sm:text-2xl font-bold"
               style={{ color: "var(--primary-color)" }}
             >
               Bus Management
             </h1>
           </div>
 
-          <div className="relative w-full md:w-64">
+          <div className="relative w-full sm:w-64">
             <input
               type="text"
               placeholder="Search buses..."
@@ -100,7 +101,7 @@ const BusesPage = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {filteredBuses.map((bus) => (
                 <div
                   key={bus.bus_id}
@@ -110,7 +111,7 @@ const BusesPage = () => {
                     <img
                       src={bus.bus_image}
                       alt={`Bus #${bus.bus_number}`}
-                      className="h-48 w-full object-cover"
+                      className="h-40 sm:h-48 w-full object-cover"
                       onError={(e) => {
                         e.target.src = "/placeholder.jpg";
                       }}
@@ -126,15 +127,15 @@ const BusesPage = () => {
                     </div>
                   </div>
 
-                  <div className="p-5">
+                  <div className="p-4 sm:p-5">
                     <div className="flex items-center justify-between mb-4">
                       <h3
-                        className="text-lg font-semibold"
+                        className="text-base sm:text-lg font-semibold"
                         style={{ color: "var(--primary-color)" }}
                       >
                         {bus.bus_route.split("-")[0]}
                         <span className="mx-2">→</span>
-                        {bus.bus_route.split("-")[1] || bus.bus_route}
+                        {"HU"}
                       </h3>
                     </div>
 
@@ -175,13 +176,15 @@ const BusesPage = () => {
                         >
                           Route:
                         </span>
-                        <span className="text-gray-600">{bus.bus_route}</span>
+                        <span className="text-gray-600 text-xs sm:text-sm truncate">
+                          {bus.bus_route}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="mt-5 pt-4 border-t border-gray-100 flex justify-between">
+                    <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between gap-2">
                       <button
-                        className="text-sm px-3 py-1 rounded-md"
+                        className="text-sm px-3 py-1 rounded-md w-full sm:w-auto"
                         style={{
                           backgroundColor: "var(--third-color)",
                           color: "var(--primary-color)",
@@ -190,7 +193,7 @@ const BusesPage = () => {
                         View Schedule
                       </button>
                       <button
-                        className="text-sm px-3 py-1 rounded-md"
+                        className="text-sm px-3 py-1 rounded-md w-full sm:w-auto"
                         style={{
                           backgroundColor: "var(--primary-color)",
                           color: "white",
@@ -205,12 +208,14 @@ const BusesPage = () => {
             </div>
 
             {(hasNextPage || currentPage > 1) && (
-              <Pagination
-                currentPage={currentPage}
-                hasNextPage={hasNextPage}
-                goToPreviousPage={goToPreviousPage}
-                goToNextPage={goToNextPage}
-              />
+              <div className="mt-6">
+                <Pagination
+                  currentPage={currentPage}
+                  hasNextPage={hasNextPage}
+                  goToPreviousPage={goToPreviousPage}
+                  goToNextPage={goToNextPage}
+                />
+              </div>
             )}
           </>
         )}

@@ -171,7 +171,7 @@ const DriverProfile = () => {
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center justify-center py-2 px-4 rounded-lg transition-all duration-200 hover:bg-opacity-80 w-full sm:w-auto"
+                className="flex items-center justify-center  py-2 px-4 rounded-lg transition-all duration-200 hover:bg-opacity-80 sm:mx-0 mx-auto"
                 style={{ backgroundColor: "var(--secondary-color)" }}
               >
                 <LogOut size={18} className="mr-2" />

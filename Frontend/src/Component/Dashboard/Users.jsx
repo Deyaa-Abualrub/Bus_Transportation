@@ -50,28 +50,29 @@ const UsersPage = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       <Sidebar />
+
       <div
-        className="flex-1 overflow-auto p-6"
+        className="flex-1 p-4 sm:p-6 w-full overflow-auto"
         style={{ backgroundColor: "var(--third-color)" }}
       >
-        <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div className="flex items-center mb-4 md:mb-0">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center mb-3 sm:mb-0">
             <Users
               size={28}
               className="text-white p-1 rounded-md mr-3"
               style={{ backgroundColor: "var(--secondary-color)" }}
             />
             <h1
-              className="text-2xl font-bold"
+              className="text-xl sm:text-2xl font-bold"
               style={{ color: "var(--primary-color)" }}
             >
               Users Management
             </h1>
           </div>
 
-          <div className="relative w-full md:w-64">
+          <div className="relative w-full sm:w-64">
             <input
               type="text"
               placeholder="Search users..."
@@ -101,7 +102,7 @@ const UsersPage = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {filteredUsers.map((user) => (
                 <div
                   key={user.user_id}
@@ -111,28 +112,34 @@ const UsersPage = () => {
                     className="h-3"
                     style={{ backgroundColor: "var(--secondary-color)" }}
                   ></div>
-                  <div className="p-6">
-                    <div className="flex items-center mb-4">
+                  <div className="p-4 sm:p-6">
+                    <div className="flex items-center mb-3 sm:mb-4">
                       <div
                         className="rounded-full p-2 mr-3"
                         style={{ backgroundColor: "var(--third-color)" }}
                       >
-                        <User className="text-gray-800" size={20} />
+                        <User
+                          className="text-gray-800"
+                          size={18}
+                          sm:size={20}
+                        />
                       </div>
-                      <h2 className="text-lg font-semibold">
+                      <h2 className="text-base sm:text-lg font-semibold truncate">
                         {user.full_name}
                       </h2>
                     </div>
 
-                    <div className="space-y-2 mt-4">
-                      <div className="flex items-center text-sm">
+                    <div className="space-y-2 mt-3 sm:mt-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center text-sm">
                         <span
                           className="font-medium mr-2"
                           style={{ color: "var(--primary-color)" }}
                         >
                           Email:
                         </span>
-                        <span className="text-gray-600">{user.email}</span>
+                        <span className="text-gray-600 text-xs sm:text-sm break-all">
+                          {user.email}
+                        </span>
                       </div>
                       <div className="flex items-center text-sm">
                         <span
@@ -146,30 +153,20 @@ const UsersPage = () => {
                         </span>
                       </div>
                     </div>
-
-                    <div className="mt-5 flex justify-end">
-                      <button
-                        className="text-sm px-3 py-1 rounded"
-                        style={{
-                          backgroundColor: "var(--primary-color)",
-                          color: "white",
-                        }}
-                      >
-                        View Details
-                      </button>
-                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
             {(hasNextPage || currentPage > 1) && (
-              <Pagination
-                currentPage={currentPage}
-                hasNextPage={hasNextPage}
-                goToPreviousPage={goToPreviousPage}
-                goToNextPage={goToNextPage}
-              />
+              <div className="mt-6">
+                <Pagination
+                  currentPage={currentPage}
+                  hasNextPage={hasNextPage}
+                  goToPreviousPage={goToPreviousPage}
+                  goToNextPage={goToNextPage}
+                />
+              </div>
             )}
           </>
         )}

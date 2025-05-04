@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate , Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Headset, Calendar, DollarSign } from "lucide-react";
 
 const DriverLogin = () => {
   const {
@@ -31,30 +33,27 @@ const DriverLogin = () => {
       );
 
       if (response.status === 200) {
-        Swal.fire({
-          title: "Sign In Successful!",
-          text: "You have successfully signed in.",
-          icon: "success",
-          confirmButtonText: "Continue",
-          confirmButtonColor: "var(--secondary-color)",
-        }).then(() => {
-          // Redirect to home or dashboard
-          navigate(`/driver/profile/${response.data.driver.driver_id}`);
-
-
+        toast.success("You have successfully signed in!", {
+          position: "top-center", // Corrected this to use string directly
+          autoClose: 2000,
+          onClose: () => {
+            // Redirect to profile page after toast closes
+            navigate(`/driver/profile/${response.data.driver.driver_id}`);
+          },
         });
       } else {
         setMessage(`Error: ${response.data.message || "Invalid credentials"}`);
+        toast.error(response.data.message || "Invalid credentials", {
+          position: "top-center", // Corrected this to use string directly
+          autoClose: 3000,
+        });
       }
     } catch (error) {
       setMessage("Error connecting to server");
       console.error("Error submitting form:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "Something went wrong. Please try again later.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-        confirmButtonColor: "var(--secondary-color)",
+      toast.error("Something went wrong. Please try again later.", {
+        position: "top-center", // Corrected this to use string directly
+        autoClose: 3000,
       });
     } finally {
       setLoading(false);
@@ -66,6 +65,7 @@ const DriverLogin = () => {
       className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
       style={{ background: `var(--third-color)` }}
     >
+      <ToastContainer />
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-hidden">
         <div className="flex flex-col md:flex-row">
           {/* Left Side - Banner */}
@@ -100,61 +100,28 @@ const DriverLogin = () => {
               <div className="mt-8 hidden md:block">
                 <div className="space-y-4">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    <div className="flex-shrink-0 h-5 w-5 rounded-full bg-opacity-20 flex items-center justify-center">
+                      <Headset className="h-8 w-8 text-white" />
                     </div>
-                    <div className="ml-3 text-sm">Professional Support</div>
+                    <div className="ml-3 text-sm text-white">
+                      24/7 Technical Support
+                    </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    <div className="flex-shrink-0 h-5 w-5 rounded-full bg-opacity-20 flex items-center justify-center">
+                      <Calendar className="h-8 w-8 text-white" />
                     </div>
-                    <div className="ml-3 text-sm">Flexible Schedule</div>
+                    <div className="ml-3 text-sm text-white">
+                      Flexible Schedule
+                    </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    <div className="flex-shrink-0 h-5 w-5 rounded-full  bg-opacity-20 flex items-center justify-center">
+                      <DollarSign className="h-8 w-8 text-white" />
                     </div>
-                    <div className="ml-3 text-sm">Great Earnings</div>
+                    <div className="ml-3 text-sm text-white">
+                      Great Earnings
+                    </div>
                   </div>
                 </div>
               </div>

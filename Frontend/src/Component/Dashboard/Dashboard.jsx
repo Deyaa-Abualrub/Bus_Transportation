@@ -355,7 +355,7 @@ const Dashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h3
-                className="text-xl font-bold"
+                className="text-xl font-bold text-sm md:text-lg lg:text-2xl"
                 style={{ color: "var(--primary-color)" }}
               >
                 Weekly Activity
@@ -369,8 +369,11 @@ const Dashboard = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={activityData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis
+                    dataKey="name"
+                    tickMargin={10} 
+                  />
+                  <YAxis tickMargin={10} />
                   <Tooltip />
                   <Bar
                     dataKey="users"
@@ -390,7 +393,7 @@ const Dashboard = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h3
-                className="text-xl font-bold"
+                className="text-xl font-bold text-sm md:text-lg lg:text-2xl"
                 style={{ color: "var(--primary-color)" }}
               >
                 Recent Activity
@@ -405,8 +408,10 @@ const Dashboard = () => {
                     index !== recentActivities.length - 1 ? "border-b" : ""
                   } flex justify-between`}
                 >
-                  <span className="text-gray-700">{activity.message}</span>
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-gray-700 text-sm md:text-base lg:text-lg">
+                    {activity.message}
+                  </span>
+                  <span className="text-gray-500 text-sm md:text-base lg:text-lg">
                     {new Date(activity.time).toLocaleString("en-GB", {
                       day: "2-digit",
                       month: "2-digit",

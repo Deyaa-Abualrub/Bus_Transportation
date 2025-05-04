@@ -116,6 +116,92 @@ const DriverRequests = () => {
     }
   };
 
+  // Table headers configuration for both table and cards
+  const tableHeaders = [
+    { key: "full_name", label: "Driver Name" },
+    {
+      key: "phone_number",
+      label: "Phone Number",
+      render: (driver) => (
+        <div className="flex items-center">
+          <Phone size={16} className="mr-2" />
+          {driver.phone_number || "Not provided"}
+        </div>
+      ),
+    },
+    {
+      key: "license_img",
+      label: "License Image",
+      render: (driver) =>
+        driver.license_img ? (
+          <button
+            onClick={() => handleViewImage(driver.driver_id, "license")}
+            className="text-blue-500 hover:underline flex items-center"
+          >
+            <Image size={16} className="mr-1" />
+            View
+          </button>
+        ) : (
+          <span className="text-gray-400">Not provided</span>
+        ),
+    },
+    {
+      key: "non_conviction_img",
+      label: "Non-Conviction Certificate",
+      render: (driver) =>
+        driver.non_conviction_img ? (
+          <button
+            onClick={() => handleViewImage(driver.driver_id, "non_conviction")}
+            className="text-blue-500 hover:underline flex items-center"
+          >
+            <Image size={16} className="mr-1" />
+            View
+          </button>
+        ) : (
+          <span className="text-gray-400">Not provided</span>
+        ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (driver) => (
+        <span
+          className={`px-3 py-1 rounded-full text-sm flex items-center w-fit ${getStatusColor(
+            driver.status
+          )}`}
+        >
+          {getStatusIcon(driver.status)}
+          <span className="ml-1 capitalize">{driver.status}</span>
+        </span>
+      ),
+    },
+    { key: "actions", label: "Actions" },
+  ];
+
+  // Render action buttons for both table and cards
+  const renderActions = (driver) => {
+    if (driver.status === "pending") {
+      return (
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleApprove(driver.driver_id)}
+            className="py-1 px-3 rounded text-white text-sm"
+            style={{ backgroundColor: "var(--primary-color)" }}
+          >
+            Approve
+          </button>
+          <button
+            onClick={() => handleReject(driver.driver_id)}
+            className="py-1 px-3 rounded text-white bg-red-500 hover:bg-red-600 text-sm"
+          >
+            Reject
+          </button>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -149,97 +235,174 @@ const DriverRequests = () => {
         </div>
 
         {filteredDrivers.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr style={{ backgroundColor: "var(--primary-color)" }}>
-                  <th className="p-4 text-white text-left">Driver Name</th>
-                  <th className="p-4 text-white text-left">Phone Number</th>
-                  <th className="p-4 text-white text-left">License Image</th>
-                  <th className="p-4 text-white text-left">
-                    Non-Conviction Certificate
-                  </th>
-                  <th className="p-4 text-white text-left">Status</th>
-                  <th className="p-4 text-white text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredDrivers.map((driver) => (
-                  <tr
-                    key={driver.driver_id}
-                    className="border-b hover:bg-gray-50"
-                  >
-                    <td className="p-4 font-medium">{driver.full_name}</td>
-                    <td className="p-4">
-                      <div className="flex items-center">
-                        <Phone size={16} className="mr-2" />
-                        {driver.phone_number || "Not provided"}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      {driver.license_img ? (
-                        <button
-                          onClick={() =>
-                            handleViewImage(driver.driver_id, "license")
-                          }
-                          className="text-blue-500 hover:underline flex items-center"
-                        >
-                          <Image size={16} className="mr-1" />
-                          View
-                        </button>
-                      ) : (
-                        <span className="text-gray-400">Not provided</span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      {driver.non_conviction_img ? (
-                        <button
-                          onClick={() =>
-                            handleViewImage(driver.driver_id, "non_conviction")
-                          }
-                          className="text-blue-500 hover:underline flex items-center"
-                        >
-                          <Image size={16} className="mr-1" />
-                          View
-                        </button>
-                      ) : (
-                        <span className="text-gray-400">Not provided</span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm flex items-center w-fit ${getStatusColor(
-                          driver.status
-                        )}`}
-                      >
-                        {getStatusIcon(driver.status)}
-                        <span className="ml-1 capitalize">{driver.status}</span>
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      {driver.status === "pending" && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleApprove(driver.driver_id)}
-                            className="py-1 px-3 rounded text-white text-sm"
-                            style={{ backgroundColor: "var(--primary-color)" }}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleReject(driver.driver_id)}
-                            className="py-1 px-3 rounded text-white bg-red-500 hover:bg-red-600 text-sm"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      )}
-                    </td>
+          <>
+            {/* Desktop Table View (hidden on mobile) */}
+            <div className="hidden lg:block bg-white rounded-lg shadow-md overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ backgroundColor: "var(--primary-color)" }}>
+                    {tableHeaders.map((header, index) => (
+                      <th key={index} className="p-4 text-white text-left">
+                        {header.label}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredDrivers.map((driver) => (
+                    <tr
+                      key={driver.driver_id}
+                      className="border-b hover:bg-gray-50"
+                    >
+                      <td className="p-4 font-medium">{driver.full_name}</td>
+                      <td className="p-4">
+                        <div className="flex items-center">
+                          <Phone size={16} className="mr-2" />
+                          {driver.phone_number || "Not provided"}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        {driver.license_img ? (
+                          <button
+                            onClick={() =>
+                              handleViewImage(driver.driver_id, "license")
+                            }
+                            className="text-blue-500 hover:underline flex items-center"
+                          >
+                            <Image size={16} className="mr-1" />
+                            View
+                          </button>
+                        ) : (
+                          <span className="text-gray-400">Not provided</span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        {driver.non_conviction_img ? (
+                          <button
+                            onClick={() =>
+                              handleViewImage(
+                                driver.driver_id,
+                                "non_conviction"
+                              )
+                            }
+                            className="text-blue-500 hover:underline flex items-center"
+                          >
+                            <Image size={16} className="mr-1" />
+                            View
+                          </button>
+                        ) : (
+                          <span className="text-gray-400">Not provided</span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm flex items-center w-fit ${getStatusColor(
+                            driver.status
+                          )}`}
+                        >
+                          {getStatusIcon(driver.status)}
+                          <span className="ml-1 capitalize">
+                            {driver.status}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="p-4">{renderActions(driver)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View (visible only on mobile) */}
+            <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+              {filteredDrivers.map((driver, index) => (
+                <div
+                  key={driver.driver_id}
+                  className="relative rounded-lg shadow-md p-6 mb-4 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  style={{
+                    backgroundColor: "#fff",
+                    border: `2px solid var(--primary-color)`,
+                  }}
+                >
+                  {/* Decorative accent */}
+                  <div
+                    className="absolute top-0 left-0 w-full h-1"
+                    style={{ backgroundColor: "var(--secondary-color)" }}
+                  ></div>
+
+                  {/* Driver number badge */}
+                  <div
+                    className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "white",
+                    }}
+                  >
+                    #{index + 1}
+                  </div>
+
+                  {/* Driver info */}
+                  <div className="mt-4">
+                    <div className="mb-4">
+                      <p
+                        className="text-xs font-semibold uppercase tracking-wider"
+                        style={{ color: "var(--primary-color)" }}
+                      >
+                        Driver Name
+                      </p>
+                      <p
+                        className="font-bold text-lg mt-1"
+                        style={{ color: "var(--primary-color)" }}
+                      >
+                        {driver.full_name}
+                      </p>
+                    </div>
+
+                    <div className="mb-4">
+                      <p
+                        className="text-xs font-semibold uppercase tracking-wider"
+                        style={{ color: "var(--primary-color)" }}
+                      >
+                        Email
+                      </p>
+                      <p className="text-sm font-medium mt-1 break-all">
+                        {driver.email}
+                      </p>
+                    </div>
+
+                    <div className="mb-4">
+                      <p
+                        className="text-xs font-semibold uppercase tracking-wider"
+                        style={{ color: "var(--primary-color)" }}
+                      >
+                        Phone
+                      </p>
+                      <p className="text-sm font-medium mt-1">
+                        {driver.phone_number || (
+                          <span className="opacity-50">N/A</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Status badge */}
+                  <div className="mt-4 flex justify-between items-center">
+                    <span
+                      className="px-3 py-1 text-xs font-bold rounded-full"
+                      style={{
+                        backgroundColor: "var(--secondary-color)",
+                        color: "white",
+                      }}
+                    >
+                      Active
+                    </span>
+
+                    {/* Add any action buttons here if needed */}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="bg-white p-8 rounded-lg shadow-md text-center">
             <AlertCircle

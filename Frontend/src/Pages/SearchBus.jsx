@@ -220,9 +220,20 @@ const SearchBus = () => {
                     />
                   </svg>
                   {searchType === "launch_date"
-                    ? `Launch Date: ${bus.launch_date}`
-                    : `Status Change Date: ${bus.status_change_time}`}
+                    ? `Launch Date: ${new Date(
+                        bus.launch_date
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}`
+                    : `Status Change Date: ${new Date(
+                        bus.status_change_time
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}`}
                 </div>
+
                 <div className="flex items-center text-[var(--text-color)] text-sm font-medium">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

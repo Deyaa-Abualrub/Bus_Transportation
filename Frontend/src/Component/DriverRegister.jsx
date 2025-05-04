@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-
+import { Headset, Calendar, DollarSign } from "lucide-react";
 const DriverRegistr = () => {
   const {
     register,
@@ -108,65 +108,31 @@ const DriverRegistr = () => {
                   Join our platform and start your journey with us
                 </p>
               </div>
-
               <div className="mt-8 hidden md:block">
                 <div className="space-y-4">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    <div className="flex-shrink-0 h-6 w-6 rounded-full bg-opacity-20 flex items-center justify-center">
+                      <Headset className="h-8 w-8 text-white" />
                     </div>
-                    <div className="ml-3 text-sm">Professional Support</div>
+                    <div className="ml-3 text-sm text-white">
+                      24/7 Technical Support
+                    </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    <div className="flex-shrink-0 h-6 w-6 rounded-full bg-opacity-20 flex items-center justify-center">
+                      <Calendar className="h-8 w-8 text-white" />
                     </div>
-                    <div className="ml-3 text-sm">Flexible Schedule</div>
+                    <div className="ml-3 text-sm text-white">
+                      Flexible Schedule
+                    </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    <div className="flex-shrink-0 h-6 w-6 rounded-full  bg-opacity-20 flex items-center justify-center">
+                      <DollarSign className="h-8 w-8 text-white" />
                     </div>
-                    <div className="ml-3 text-sm">Great Earnings</div>
+                    <div className="ml-3 text-sm text-white">
+                      Great Earnings
+                    </div>
                   </div>
                 </div>
               </div>
