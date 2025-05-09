@@ -18,7 +18,13 @@ const Checkout = () => {
   const handleSeatChange = (e) => {
     const newSeatCount = parseInt(e.target.value);
     setSeatCount(newSeatCount);
-    setTotalPrice(bus.price * newSeatCount);
+
+    // حساب السعر الإجمالي مع خصم إذا كان عدد الكراسي 5 أو أكثر
+    let updatedPrice = bus.price * newSeatCount;
+    if (newSeatCount >= 5) {
+      updatedPrice -= 0.1 * newSeatCount; // خصم 0.1 لكل كرسي
+    }
+    setTotalPrice(updatedPrice);
   };
 
   const showSuccessToast = (message) => {
@@ -157,6 +163,7 @@ const Checkout = () => {
         </div>
 
         <div className="p-6 sm:p-8 bg-[#f6f3e56e]">
+          {/* Customer Information */}
           <div className="mb-8 p-4 rounded-lg bg-[var(--third-color)] border-l-4 border-[var(--primary-color)]">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-[var(--primary-color)] rounded-full flex items-center justify-center mr-4">
@@ -182,6 +189,7 @@ const Checkout = () => {
             </div>
           </div>
 
+          {/* Bus Information */}
           <div className="mb-8 p-6 rounded-xl bg-gradient-to-r from-white to-[var(--third-color)] shadow-sm border border-gray-100">
             <h3 className="text-xl font-bold text-[var(--primary-color)] mb-4">
               Bus Information
@@ -214,6 +222,7 @@ const Checkout = () => {
             </div>
           </div>
 
+          {/* Seat Selection */}
           <div className="mb-8">
             <h3 className="text-xl font-bold text-[var(--primary-color)] mb-4">
               Select Seats
@@ -250,6 +259,7 @@ const Checkout = () => {
             </div>
           </div>
 
+          {/* Payment Method */}
           <div className="mb-8">
             <h3 className="text-xl font-bold text-[var(--primary-color)] mb-4">
               Payment Method
@@ -280,6 +290,7 @@ const Checkout = () => {
             </div>
           </div>
 
+          {/* Payment Completion */}
           <div className="bg-gray-50 p-6 rounded-lg flex flex-col sm:flex-row items-center justify-between">
             <div className="mb-4 sm:mb-0">
               <p className="text-sm text-[var(--text-color)]">Total Amount</p>
@@ -312,5 +323,4 @@ const Checkout = () => {
     </div>
   );
 };
-
 export default Checkout;

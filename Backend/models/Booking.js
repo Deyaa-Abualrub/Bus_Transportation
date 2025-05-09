@@ -23,10 +23,6 @@ const Booking = sequelize.define(
     bus_number: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      // references: {
-      //   model: Bus,
-      //   key: "bus_number", // تأكد من أن الباص نيم يتناسب مع الجدول
-      // },
       onDelete: "CASCADE",
     },
     seat_number: {
@@ -65,20 +61,3 @@ Booking.belongsTo(User, { foreignKey: "user_id" });
 
 module.exports = Booking;
 
-// Booking.belongsTo(Bus, {
-//   foreignKey: "bus_number", // العمود في جدول Booking الذي يحوي القيمة
-//   targetKey: "bus_number", // العمود في جدول Bus الذي نقارن به
-// });
-
-// departure_location: {
-//   type: DataTypes.STRING(255),
-//   allowNull: false,
-// },
-// arrival_location: {
-//   type: DataTypes.STRING(255),
-//   allowNull: false,
-// },
-// departure_time: {
-//   type: DataTypes.DATE,
-//   allowNull: false,
-// },

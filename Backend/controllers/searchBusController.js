@@ -126,6 +126,7 @@ const addNewBus = async (req, res) => {
     const newBus = await Bus.create({
       bus_number: newBusNumber,
       seat_available: seats,
+      seat_number: seats,
       bus_route: area,
       bus_image: `/Uploads/${imageFile.filename}`,
       price: price,

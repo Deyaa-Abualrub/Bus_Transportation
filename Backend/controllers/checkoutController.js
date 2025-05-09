@@ -13,9 +13,15 @@ const checkoutController = async (req, res) => {
       paymentMethod,
       userId,
       seatNumber,
+      numberOfSeats, // عدد الكراسي الذي تم حجزها
     } = req.body;
 
-    const total_price = price;
+    let total_price = price;
+
+    // تطبيق الخصم إذا كان عدد الكراسي 5 أو أكثر
+    if (numberOfSeats >= 5) {
+      total_price = price - 0.1 * numberOfSeats; // خصم 0.1 لكل كرسي
+    }
 
     if (
       !busRoute ||
@@ -131,7 +137,6 @@ const getInvoiceById = async (req, res) => {
   const { bookingId } = req.params;
   const { from, to, searchType } = req.body;
 
-
   if (!from || !to || !searchType) {
     return res.status(400).json({ message: "Invalid search parameters" });
   }
@@ -140,9 +145,7 @@ const getInvoiceById = async (req, res) => {
     // First, get the booking with user information
     const booking = await Booking.findOne({
       where: { booking_id: bookingId },
-      include: [
-        { model: User, attributes: ["full_name"] },
-      ],
+      include: [{ model: User, attributes: ["full_name"] }],
     });
 
     if (!booking) {
@@ -176,7 +179,7 @@ const getInvoiceById = async (req, res) => {
       created_at: booking.created_at,
       time: timeValue,
       from: from,
-      to: to
+      to: to,
     };
 
     res.status(200).json(invoiceData);

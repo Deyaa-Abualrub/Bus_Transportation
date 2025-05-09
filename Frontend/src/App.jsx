@@ -20,6 +20,7 @@ import BusesPage from "./Component/Dashboard/Buses";
 import TestimonialsRequests from "./Component/Dashboard/TestimonialsRequest";
 import DriverProfile from "./Pages/DriverProfile";
 import Invoice from "./Pages/Invoice";
+import News from "./Pages/News";
 
 function App() {
   const location = useLocation();
@@ -56,6 +57,7 @@ function App() {
         <Route path="/buses" element={<BusesPage />} />
         <Route path="/driver/profile/:driverId" element={<DriverProfile />} />
         <Route path="/invoice/:bookingId" element={<Invoice />} />
+        <Route path="news" element={<News />} />
         <Route
           path="/testimonials-requests"
           element={<TestimonialsRequests />}

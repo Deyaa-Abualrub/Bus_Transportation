@@ -178,7 +178,7 @@ export default function Navbar() {
         }
       },
     },
-    { name: "Services", path: "/" },
+    { name: "News", path: "news" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];

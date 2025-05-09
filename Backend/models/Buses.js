@@ -17,6 +17,10 @@ const Bus = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    seat_number: {  
+      type: DataTypes.INTEGER,  
+      allowNull: false,  
+    },
     seat_available: {
       type: DataTypes.INTEGER,
       allowNull: true,

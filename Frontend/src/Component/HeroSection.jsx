@@ -25,9 +25,9 @@ export default function HeroSection() {
           </p>
 
           <button
-            className="text-white px-4 py-2 rounded-md bg-[var(--primary-color)]
+            className="text-white px-4 py-3 rounded-md bg-[var(--primary-color)]
                       shadow-lg transition duration-300 hover:bg-[var(--secondary-color)]
-                      transform hover:scale-95 mb-6 md:mb-8 w-auto"
+                      transform hover:scale-95 mb-6 md:mb-4 w-auto"
           >
             <a
               href="#"

@@ -15,6 +15,7 @@ const driverRoutes = require("./routes/driverRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const testimonials = require("./routes/testimonialsRoutes");
 const driverProfile = require("./routes/diverProfileRoutes");
+const news = require("./routes/newsRoutes");  
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use('/bus', testimonials);
 app.use("/bus", contactMessage);
 app.use("/bus", searchBus);
 app.use("/bus", checkout);
+app.use("/bus", news);
 app.use("/bus/auth/driver", driverRoutes);
 app.use("/auth", userRoutes);
 app.use("/auth", googleRoutes);
