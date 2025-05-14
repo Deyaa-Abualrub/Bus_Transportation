@@ -377,7 +377,7 @@ export default function News() {
                 className="text-xl mb-6"
                 style={{ color: "var(--second-text-color)" }}
               >
-                Book 5 seats with your friends and get a discount of 10 cents
+                Book 5 seats with your friends and get a discount of 0.1 JD
                 per seat.
               </p>
               {friendOffer && (
@@ -388,7 +388,7 @@ export default function News() {
                     color: "var(--primary-color)",
                   }}
                 >
-                  Current discount: JD {friendOffer.discount} per seat
+                  Current discount: {friendOffer.discount} JD per seat
                 </div>
               )}
 
@@ -397,7 +397,7 @@ export default function News() {
                   className="px-3 py-3 font-semibold text-lg rounded-lg shadow-lg hover:opacity-90 transition duration-300 ease-in-out ml-4"
                   style={{
                     backgroundColor: "var(--secondary-color)",
-                    color: "var(--third-color)",
+                    color: "var(--primary-color)",
                   }}
                 >
                   Get Started
@@ -413,16 +413,16 @@ export default function News() {
             <div
               className="md:w-1/2 p-8"
               style={{
-                backgroundColor: "var(secondary-color)",
+                backgroundColor: "var(--third-color)",
               }}
             >
               <h3
                 className="text-2xl font-bold mb-4 text-white"
-                style={{ color: "#e8dbb1c8" }}
+                style={{ color: "#fb2c36" }}
               >
                 University Transport
               </h3>
-              <ul className="space-y-3 text-lg" style={{ color: "#bbb" }}>
+              <ul className="space-y-3 text-lg" style={{ color: "var(--primary-color)" }}>
                 <li>• Daily shuttle service to/from Hashemite University</li>
                 <li>• Extra trips during exam periods</li>
                 <li>• New real-time bus tracking app</li>
