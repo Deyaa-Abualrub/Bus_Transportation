@@ -1,7 +1,23 @@
+import { useRef, useState, useEffect } from "react";
 import hero_section from "../assets/hero_section.jpg";
 import BookingForm from "./BookingForm";
 
 export default function HeroSection() {
+  const [scrollTrigger, setScrollTrigger] = useState(false);
+  const bookingRef = useRef(null);
+
+  const handleGetStartedClick = () => {
+    setScrollTrigger(true);
+  };
+
+  // Reset scroll trigger after scrolling is done
+  useEffect(() => {
+    if (scrollTrigger) {
+      const timeout = setTimeout(() => setScrollTrigger(false), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [scrollTrigger]);
+
   return (
     <section
       className="hero-section bg-cover bg-center text-center min-h-[60vh] md:min-h-[80vh] w-full flex items-center justify-center relative text-white pt-16 md:pt-20 lg:pt-24 pb-8"
@@ -25,15 +41,13 @@ export default function HeroSection() {
           </p>
 
           <button
+            onClick={handleGetStartedClick}
             className="text-white px-4 py-3 rounded-md bg-[var(--primary-color)]
                       shadow-lg transition duration-300 hover:bg-[var(--secondary-color)]
                       transform hover:scale-95 mb-6 md:mb-4 w-auto"
           >
-            <a
-              href="#"
-              className="font-medium text-lg flex items-center justify-center"
-            >
-              <span>Get Started</span>
+            <span className="font-medium text-lg flex items-center justify-center">
+              Get Started
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 sm:h-5 sm:w-5 ml-2"
@@ -46,11 +60,11 @@ export default function HeroSection() {
                   clipRule="evenodd"
                 />
               </svg>
-            </a>
+            </span>
           </button>
 
-          <div className="w-full max-w-md mx-auto">
-            <BookingForm />
+          <div className="w-full max-w-md mx-auto" ref={bookingRef}>
+            <BookingForm scrollToFrom={scrollTrigger} />
           </div>
         </div>
       </div>

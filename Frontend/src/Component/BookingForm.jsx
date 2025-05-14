@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react"; // أضف useRef و useEffect
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { setBookingForm } from "../redux/bookingFormSlice";
-import "../Styles/BookingForm.css"
+import "../Styles/BookingForm.css";
 
-export default function BookingForm() {
+export default function BookingForm({ scrollToFrom }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [searchType, setSearchType] = useState("");
   const dispatch = useDispatch();
+
+  const fromRef = useRef(null); // المرجع لحقل From
+
+  // Scroll to "From" input when scrollToFrom is true
+  useEffect(() => {
+    if (scrollToFrom && fromRef.current) {
+      fromRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      fromRef.current.focus();
+    }
+  }, [scrollToFrom]);
 
   const handleFromChange = (e) => {
     const newFrom = e.target.value;
@@ -35,6 +45,7 @@ export default function BookingForm() {
         {/* Changed flex direction to be column until lg breakpoint (992px+) */}
         <div className="flex flex-col space-y-3 sm:space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:space-x-6 lg:space-x-8">
           <select
+            ref={fromRef} // أضفنا المرجع هنا
             className="w-full lg:w-[38%] p-2 sm:p-3 bg-white border-2 border-[var(--primary-color)] rounded-md text-gray-600 text-sm sm:text-base font-medium mr-[5px] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] transition-all"
             value={from}
             onChange={handleFromChange}
