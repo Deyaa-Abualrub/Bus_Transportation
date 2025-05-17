@@ -51,7 +51,7 @@ const signup = async (req, res) => {
       full_name,
       email,
       password: hashedPassword,
-      role: "user", // تأكد من تعيين دور المستخدم هنا إذا لم يكن موجودًا في الـ Request
+      role: "user",
     });
 
     const token = jwt.sign(
@@ -159,11 +159,21 @@ const profile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { user_id } = req.params;
-    const { full_name, email, password } = req.body;
+    const { full_name, email, password, currentPassword } = req.body;
 
     const user = await User.findByPk(user_id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    // تحقق من كلمة المرور الحالية إذا تم تقديمها
+    if (password && currentPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect" });
+      }
     }
 
     if (password) {

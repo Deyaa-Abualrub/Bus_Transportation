@@ -9,7 +9,7 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { FaUserCircle, FaFileInvoice, FaCar, FaUser } from "react-icons/fa";
+import { FaUserCircle, FaFileInvoice } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
@@ -66,10 +66,6 @@ export default function Navbar() {
       console.error("Logout failed:", error);
       toast.error("Logout failed. Please try again.");
     }
-  };
-
-  const openProfileModal = () => {
-    setIsProfileOpen(true);
   };
 
   const closeProfileModal = () => {

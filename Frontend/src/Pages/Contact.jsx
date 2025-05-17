@@ -1,12 +1,9 @@
-"use client";
-
 import { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
-// تعريف متغير للون الأخضر للنجاح
-const successGreenColor = "#28a745"; // لون أخضر للنجاح
+const successGreenColor = "#28a745";
 
 // Custom SweetAlert styling with CSS variables
 const customSweetAlertStyle = {
@@ -23,7 +20,6 @@ export default function Contact() {
     message: "",
   });
 
-  // تحديث القيم عند إدخال البيانات
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -38,15 +34,14 @@ export default function Contact() {
       );
 
       if (response.status === 201) {
-        // عرض رسالة نجاح باستخدام SweetAlert2 مع اللون الأخضر
         Swal.fire({
           icon: "success",
           title: "Message Sent!",
           text: "Your message has been sent successfully.",
           confirmButtonText: "OK",
-          confirmButtonColor: successGreenColor, // زر أخضر
+          confirmButtonColor: successGreenColor,
           background: "#fff",
-          iconColor: successGreenColor, // أيقونة خضراء
+          iconColor: successGreenColor,
           customClass: {
             popup: "sweet-alert-popup",
             title: "sweet-alert-title",
@@ -68,7 +63,6 @@ export default function Contact() {
           },
         });
 
-        // إعادة تعيين النموذج بعد الإرسال الناجح
         setFormData({ name: "", email: "", message: "" });
       }
     } catch (error) {
@@ -80,9 +74,9 @@ export default function Contact() {
           ? error.response.data.error || "Something went wrong."
           : "Server error. Please try again later.",
         confirmButtonText: "OK",
-        confirmButtonColor: "var(--secondary-color)", // الزر أحمر للخطأ
+        confirmButtonColor: "var(--secondary-color)", 
         background: "#fff",
-        iconColor: "var(--secondary-color)", // أيقونة حمراء للخطأ
+        iconColor: "var(--secondary-color)",
         customClass: {
           popup: "sweet-alert-popup",
           title: "sweet-alert-title",
@@ -96,9 +90,7 @@ export default function Contact() {
           popup: "animate__animated animate__fadeOut",
         },
         didOpen: () => {
-          // تطبيق المتغيرات CSS المخصصة على الـ SweetAlert
           const popup = Swal.getPopup();
-          // استخدام متغيرات مختلفة للخطأ
           const errorStyle = {
             ...customSweetAlertStyle,
             "--swal2-confirm-button-background": "var(--secondary-color)",
@@ -249,8 +241,8 @@ export default function Contact() {
         <iframe
           className="w-full h-full border border-[var(--primary-color)] rounded-b-2xl"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3379.755871138239!2d36.18331018483494!3d32.102883081180764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151b73d1eb51be21%3A0xc4daca834a1e6988!2z2KfZhNis2KfZhdi52Kkg2KfZhNmH2KfYtNmF2YrYqQ!5e0!3m2!1sar!2sjo!4v1739862400973!5m2!1sar!2sjo"
-          allowFullScreen=""
-          loading="lazy"
+          allowFullScreen="" // بعرض الماب بشكل كامل ب تاب جديدة
+          loading="lazy" // تحميل الخريطة بشكل بطيئ
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </motion.div>

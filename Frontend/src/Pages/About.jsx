@@ -3,7 +3,7 @@ import { Facebook, Instagram, Github, Linkedin, Mail } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="font-sans m-0 p-0 text-gray-900 shadow-custom">
+    <div className="font-sans m-0 p-0 text-gray-900">
       <div className="flex flex-col lg:flex-row justify-between py-12 rounded-lg justify-center shadow-lg gap-12 mx-auto px-4 sm:px-6">
         {/* Text Content */}
         <div className="max-w-full lg:max-w-[60%] mb-6 lg:mb-0">

@@ -10,9 +10,8 @@ export default function BookingForm({ scrollToFrom }) {
   const [searchType, setSearchType] = useState("");
   const dispatch = useDispatch();
 
-  const fromRef = useRef(null); // المرجع لحقل From
+  const fromRef = useRef(null);
 
-  // Scroll to "From" input when scrollToFrom is true
   useEffect(() => {
     if (scrollToFrom && fromRef.current) {
       fromRef.current.scrollIntoView({ behavior: "smooth", block: "center" });

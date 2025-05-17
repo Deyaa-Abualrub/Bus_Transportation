@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Toaster, toast } from "react-hot-toast"; 
+import { Toaster, toast } from "react-hot-toast";
 import { User, Mail, Lock } from "react-feather";
 import lr_video from "../assets/lr-video.mp4";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/checkoutSlice";
-import {  GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -73,7 +73,7 @@ const Login = () => {
   };
 
   const handleRegister = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // ما بعيد تحميل الصفحة بعد ما ارسل ال data
     setLoading(true);
     try {
       const res = await axios.post(
@@ -113,13 +113,13 @@ const Login = () => {
     setLoading(true);
     try {
       const { credential } = response;
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:4000/auth/google",
         { token: credential },
-        { withCredentials: true } 
+        { withCredentials: true }
       );
       toast.success("Logged in successfully!");
-      // await loadUser(); 
+      // await loadUser();
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -128,10 +128,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-
-
-
 
   return (
     <>
@@ -277,7 +273,7 @@ const Login = () => {
               <p className="text-center text-gray-600">
                 {isRegister
                   ? "Already have an account?"
-                  : "Don't have an account?"}{" "}
+                  : "Don't have an account?"}
                 <button
                   onClick={() => setIsRegister(!isRegister)}
                   className="text-[#eb2323] font-semibold"

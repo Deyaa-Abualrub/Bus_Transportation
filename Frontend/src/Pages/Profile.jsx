@@ -25,6 +25,7 @@ const Profile = () => {
     full_name: "",
     email: "",
     password: "",
+    currentPassword: "", // إضافة كلمة المرور الحالية
   });
   const [bookings, setBookings] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
@@ -39,6 +40,7 @@ const Profile = () => {
     full_name: false,
     email: false,
     password: false,
+    currentPassword: false, // إضافة للتحكم في تعديل كلمة المرور الحالية
   });
   const [regions] = useState([
     "raghadan",
@@ -82,6 +84,7 @@ const Profile = () => {
         full_name: res.data.user.full_name,
         email: res.data.user.email,
         password: "",
+        currentPassword: "", // إضافة كلمة المرور الحالية في البداية
       });
     } catch (err) {
       toast.error("Failed to fetch profile");
@@ -135,13 +138,31 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:4000/auth/profile/${userId}`, formData);
+      // التحقق من كلمة المرور الحالية
+      if (formData.password && !formData.currentPassword) {
+        return toast.error("Please enter your current password.");
+      }
+
+      // إرسال البيانات لتحديث الملف
+      const data = {
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password ? formData.password : undefined,
+        currentPassword: formData.currentPassword,
+      };
+
+      const response = await axios.put(
+        `http://localhost:4000/auth/profile/${userId}`,
+        data
+      );
+
       toast.success("Profile updated successfully");
       fetchProfile();
       setIsEditing({
         full_name: false,
         email: false,
         password: false,
+        currentPassword: false, // غلق التعديل بعد حفظ التغييرات
       });
     } catch (err) {
       toast.error("Failed to update profile");
@@ -316,7 +337,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Mobile menu button */}
         <div className="md:hidden mb-4">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -334,7 +354,6 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden mb-4">
             <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -375,7 +394,6 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Desktop navigation */}
         <div className="hidden md:flex mb-6 overflow-x-auto bg-white rounded-lg shadow p-1">
           <button
             className={`flex items-center px-5 py-3 rounded-lg transition ${
@@ -486,6 +504,39 @@ const Profile = () => {
                   disabled={!isEditing.email}
                   className={`w-full p-3 border border-gray-300 rounded-lg ${
                     isEditing.email
+                      ? "focus:ring-2 focus:ring-[var(--third-color)] focus:border-[var(--third-color)]"
+                      : "bg-gray-50"
+                  } outline-none transition`}
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block font-medium text-gray-700">
+                    Current Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleFieldEdit("currentPassword")}
+                    className="text-[var(--secondary-color)] hover:text-opacity-80 flex items-center text-sm"
+                  >
+                    {isEditing.currentPassword ? (
+                      <Save size={16} className="mr-1" />
+                    ) : (
+                      <Edit2 size={16} className="mr-1" />
+                    )}
+                    {isEditing.currentPassword ? "Save" : "Edit"}
+                  </button>
+                </div>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={formData.currentPassword}
+                  onChange={handleChange}
+                  disabled={!isEditing.currentPassword}
+                  placeholder="Enter your current password"
+                  className={`w-full p-3 border border-gray-300 rounded-lg ${
+                    isEditing.currentPassword
                       ? "focus:ring-2 focus:ring-[var(--third-color)] focus:border-[var(--third-color)]"
                       : "bg-gray-50"
                   } outline-none transition`}
